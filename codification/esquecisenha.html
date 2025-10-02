@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOOMBUM - Recuperar Senha</title>
+    <link rel="stylesheet" href="../css/esquecisenha.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <<div class="container">
+    <div class="logo-container">
+        <div class="logo-cadastro">
+            <img src="../midia/icon.png" alt="BOOMBUM Logo">
+        </div>
+        <main>
+            <div class="card">
+                <h2>RECUPERAR SENHA</h2>
+                
+                <div id="loading" class="loading" style="display: none;">
+                    <p>Enviando email de recuperação...</p>
+                </div>
+                
+                <div id="message" class="message" style="display: none;"></div>
+                
+                <form id="recovery-form">
+                    <div class="form-group">
+                        <label for="email">Digite seu email cadastrado</label>
+                        <input type="email" id="email" placeholder="seu@email.com" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">ENVIAR LINK DE RECUPERAÇÃO</button>
+                    
+                    <div class="login-link">
+                        <p>Lembrou sua senha? <a href="login.html">Voltar para o login</a></p>
+                    </div>
+                </form>
+                
+                <div class="instructions" id="instructions" style="display: none;">
+                    <h3>📧 Email Enviado!</h3>
+                    <p>Enviamos um link de recuperação para seu email. Siga estas instruções:</p>
+                    <ol>
+                        <li>Verifique sua caixa de entrada</li>
+                        <li>Clique no link que enviamos</li>
+                        <li>Crie uma nova senha</li>
+                        <li>Volte para fazer login</li>
+                    </ol>
+                    <p class="note">Não recebeu o email? Verifique sua pasta de spam.</p>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>© 2023 BOOMBUM - Uma empresa do grupo Mogatu</p>
+        </footer>
+    </div>
+    
+    <script src="../codification/script/esquecisenha.js"></script>
+</body>
+</html>
