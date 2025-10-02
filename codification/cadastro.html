@@ -2,134 +2,54 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="../midia/favicon.png" style="border-radius: 20PX;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOOMBUM - Criar Conta</title>
-    <link rel="stylesheet" href="../css/cadastro.css"">
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <link rel="stylesheet" href="../css/cadastro.css">
+    
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 </head>
 <body>
     <div class="container">
-    <div class="logo-container">
-        <div class="logo-cadastro">
-            <img src="../midia/icon.png" alt="BOOMBUM Logo">
-        </div>
+        <div class="logo-container">
+            <div class="logo-cadastro">
+                <img src="../midia/icon.png" alt="BOOMBUM Logo">
+            </div>
         </div>
         <main>
             <div class="card">
                 <h2>CRIAR CONTA</h2>
-                
+
+                <div id="loading" style="display:none;">Criando conta...</div>
+                <div id="message" class="message" style="display:none;"></div>
+
                 <form id="register-form">
-                    <div class="account-type">
-                        <p>Tipo de conta</p>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="account-type" value="pf" checked>
-                                <span class="radio-checkmark"></span>
-                                Pessoa Física
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="account-type" value="pj">
-                                <span class="radio-checkmark"></span>
-                                Pessoa Jurídica
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="social-options">
-                        <label class="checkbox-option">
-                            <input type="checkbox">
-                            <span class="checkbox-checkmark"></span>
-                            Conectar com o <strong>Google</strong>
-                        </label>
-                        <label class="checkbox-option">
-                            <input type="checkbox" checked>
-                            <span class="checkbox-checkmark"></span>
-                            Conectar com o <strong>Apple</strong>
-                        </label>
-                    </div>
-                    
                     <div class="form-group">
                         <input type="text" id="full-name" placeholder="Nome completo*" required>
                     </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group half">
-                            <input type="text" id="cpf" placeholder="CPF*" required>
-                        </div>
-                        <div class="form-group half">
-                            <input type="text" id="birth-date" placeholder="Data de nascimento*" required>
-                        </div>
+                    <div class="form-group">
+                        <input type="email" id="email" placeholder="E-mail*" required>
                     </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group half">
-                            <input type="tel" id="phone" placeholder="Telefone celular*" required>
-                        </div>
-                        <div class="form-group half">
-                            <input type="email" id="email" placeholder="E-mail*" required>
-                        </div>
+                    <div class="form-group">
+                        <input type="password" id="password" placeholder="Crie sua senha*" required>
                     </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group half">
-                            <input type="password" id="password" placeholder="Crie sua senha*" required>
-                        </div>
-                        <div class="form-group half">
-                            <input type="password" id="confirm-password" placeholder="Confirme sua senha*" required>
-                        </div>
+                    <div class="form-group">
+                        <input type="password" id="confirm-password" placeholder="Confirme sua senha*" required>
                     </div>
-                    
-                    <hr>
-                    
-                    <div class="referral">
-                        <h3>Onde você conheceu a BOOMBUM?</h3>
-                        <div class="form-group">
-                            <select id="referral-source">
-                                <option value="">Selecione uma opção</option>
-                                <option value="google">Google/Busca</option>
-                                <option value="redes-sociais">Redes Sociais</option>
-                                <option value="indicacao">Indicação de amigo</option>
-                                <option value="outro">Outro</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="text-content">
-                        <p><strong>Compra digital segura</strong></p>
-                        <p>As agências "inovadoras e modernas" oferecem a melhor experiência de compra. A opção "segura" inclui garantia estendida, não-perecível, após um sistema de confiança do que é muito fácil.</p>
-                        <p>Quando se pode ser desafiada, o que é mais fácil?</p>
-                        <p>Quando se pode ser desafiado, o que é mais fácil?</p>
-                    </div>
-                    
-                    <div class="marketing-options">
-                        <label class="checkbox-option">
-                            <input type="checkbox">
-                            <span class="checkbox-checkmark"></span>
-                            Quero receber ofertas e novidades por e-mail, SMS, WhatsApp ou mensagens da BOOMBUM
-                        </label>
-                        
-                        <label class="checkbox-option">
-                            <input type="checkbox" required>
-                            <span class="checkbox-checkmark"></span>
-                            Eu aceito os <strong>Termos de uso e Política de privacidade</strong>
-                        </label>
-                    </div>
-                    
+
+                    <label>
+                        <input type="checkbox" required>
+                        Eu aceito os Termos de uso e Política de privacidade
+                    </label>
+
                     <button type="submit" class="btn-primary">CRIAR CONTA</button>
-                    
-                    <div class="login-link">
-                        <p>Já tem uma conta? <a href="login.html">ENTRAR</a></p>
-                    </div>
                 </form>
             </div>
         </main>
-        
-        <footer>
-            <p>© 2023 BOOMBUM - Uma empresa do grupo Mogatu</p>
-        </footer>
     </div>
-    
-    <script src="../codification/script/cadastro.js""></script>
+
+    <script src="../codification/script/cadastro.js"></script>
 </body>
 </html>

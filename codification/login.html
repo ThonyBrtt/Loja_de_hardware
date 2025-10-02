@@ -1,69 +1,74 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <div class="logo">
-        <img src="../midia/icon.png" alt="Logo">
-    <title>Acessar Conta</title>
-    <link rel="stylesheet" href="../css/login.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acessar Conta</title>
+  <link rel="stylesheet" href="../css/login.css">
 </head>
 <body>
-    <div class="container">
-        <main>
-            <div class="card">
-                <h2>ACESSE SUA CONTA</h2> 
-            <div id="loading" class="loading" style="display: none;">
-            <p>Entrando...</p>
-            </div>
-                <div id="message" class="message" style="display: none;"></div>
-                
-                <form id="login-form">
-                    <div class="form-group">
-                        <input type="text" id="login-identifier" placeholder="E-mail, CPF ou CNPJ" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <input type="password" id="login-password" placeholder="Senha" required>
-                    </div>
-                    
-                    <button type="submit" class="btn-primary">ENTRAR</button>
-                    
-                    <div class="forgot-password">
-                        <a href="#">Esqueci a senha</a>
-                    </div>
-                    
-                    <div class="divider">
-                        <span>Ou</span>
-                    </div>
-                    
-                    <p class="social-login-text">Quero acessar com minhas redes sociais</p>
-                    
-                    <div class="social-buttons">
-                        <button type="button" class="btn-social google">
-                            <span class="social-icon">G</span>
-                            Google
-                        </button>
-                        <button type="button" class="btn-social apple">
-                            <span class="social-icon">A</span>
-                            Apple
-                        </button>
-                    </div>
-                    
-                    <div class="register-link">
-                        <p>Novo na BOOMBUM? <a href="cadastro.html">CADASTRE-SE</a></p>
-                    </div>
-                </form>
-            </div>
-        </main>
-        
-        <footer>
-            <p>Termos de uso</p>
-            <p>Política de privacidade</p>
-            <p>© 2023 BOOMBUM - Uma empresa do grupo Mogatu</p>
-        </footer>
-    </div>
-    
-    <script src="../codification/script/login.js"></script>
+  <div class="container">
+    <main>
+      <div class="card">
+        <h2>ACESSE SUA CONTA</h2>
+
+        <div id="loading" class="loading" style="display: none;">
+          <p>Entrando...</p>
+        </div>
+
+        <div id="message" class="message" style="display: none;"></div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <input type="email" id="login-email" placeholder="E-mail" required>
+          </div>
+
+          <div class="form-group">
+            <input type="password" id="login-password" placeholder="Senha" required>
+          </div>
+
+          <button type="submit" class="btn-primary">ENTRAR</button>
+
+          <div class="forgot-password">
+            <a href="esquecisenha.html">Esqueci a senha</a>
+          </div>
+
+          <div class="divider"><span>Ou</span></div>
+
+          <p class="social-login-text">Quero acessar com minhas redes sociais:</p><br>
+
+          <div class="social-buttons">
+  <button type="button" id="google-login" class="btn-social google">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google logo">
+    Entrar com Google
+  </button>
+
+  <button type="button" id="apple-login" class="btn-social apple" disabled>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple logo">
+    Entrar com Apple
+  </button>
+</div>
+
+
+          <div class="register-link">
+            <p>Novo na BOOMBUM? <a href="cadastro.html">CADASTRE-SE</a></p>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <footer>
+      <p>Termos de uso</p>
+      <p>Política de privacidade</p>
+      <p>© 2023 BOOMBUM - Uma empresa do grupo Mogatu</p>
+    </footer>
+  </div>
+
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+
+  <script src="../codification/script/login.js"></script>
 </body>
 </html>

@@ -1,140 +1,125 @@
+
 const firebaseConfig = {
-    apiKey: "sua-api-key-aqui",
-    authDomain: "seu-projeto.firebaseapp.com",
-    projectId: "seu-projeto-id",
-    storageBucket: "seu-projeto.appspot.com",
-    messagingSenderId: "seu-sender-id",
-    appId: "seu-app-id"
+  apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
+  authDomain: "boombum-eaf32.firebaseapp.com",
+  projectId: "boombum-eaf32",
+  storageBucket: "boombum-eaf32.firebasestorage.app",
+  messagingSenderId: "827065363375",
+  appId: "1:827065363375:web:913f128e651fcdbe145d5a",
+  measurementId: "G-D7CBRK53E0"
 };
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('login-form');
-    const message = document.getElementById('message');
+const loginForm = document.getElementById("login-form");
+const emailInput = document.getElementById("login-email");
+const passwordInput = document.getElementById("login-password");
+const messageBox = document.getElementById("message");
+const loading = document.getElementById("loading");
 
-    if (!message) {
-        const messageDiv = document.createElement('div');
-        messageDiv.id = 'message';
-        messageDiv.className = 'message';
-        messageDiv.style.display = 'none';
-        form.parentNode.insertBefore(messageDiv, form);
+
+function showMessage(text, type = "error") {
+  messageBox.style.display = "block";
+  messageBox.className = "message " + type;
+  messageBox.innerText = text;
+  setTimeout(() => {
+    messageBox.style.display = "none";
+  }, 5000);
+}
+
+function simpleErrorMessage(error) {
+
+  if (error && error.code) {
+
+    if (error.code === "auth/wrong-password" || error.code === "auth/user-not-found") {
+      return "E-mail ou senha incorretos.";
+    }
+    if (error.code === "auth/invalid-email") {
+      return "E-mail inválido.";
     }
 
-    function showMessage(text, type) {
-        const message = document.getElementById('message');
-        message.textContent = text;
-        message.className = `message ${type}`;
-        message.style.display = 'block';
-        
-        setTimeout(() => {
-            message.style.display = 'none';
-        }, 5000);
+    if (error.code === "auth/too-many-requests") {
+      return "Tente novamente mais tarde.";
     }
+  }
 
-    auth.onAuthStateChanged((user) => {
-        if (user && user.emailVerified) {
-            window.location.href = 'dashboard.html';
-        }
-    });
 
-    form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const identifier = document.getElementById('login-identifier').value;
-        const password = document.getElementById('login-password').value;
-
-        let email = identifier;
-        if (!identifier.includes('@')) {
-            
-            email = identifier;
-        }
-
-        try {
-            const userCredential = await auth.signInWithEmailAndPassword(email, password);
-            const user = userCredential.user;
-
-            if (!user.emailVerified) {
-                showMessage('Por favor, verifique seu email antes de fazer login.', 'error');
-                await auth.signOut();
-                return;
-            }
-
-            showMessage('Login realizado com sucesso!', 'success');
-            
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 2000);
-
-        } catch (error) {
-            console.error('Erro no login:', error);
-            
-            let errorMessage = 'Erro ao fazer login: ';
-            switch (error.code) {
-                case 'auth/user-not-found':
-                    errorMessage += 'Usuário não encontrado.';
-                    break;
-                case 'auth/wrong-password':
-                    errorMessage += 'Senha incorreta.';
-                    break;
-                case 'auth/invalid-email':
-                    errorMessage += 'Email inválido.';
-                    break;
-                case 'auth/user-disabled':
-                    errorMessage += 'Esta conta foi desativada.';
-                    break;
-                default:
-                    errorMessage += error.message;
-            }
-            
-            showMessage(errorMessage, 'error');
-        }
-    });
-    document.querySelector('.btn-social.google').addEventListener('click', async function() {
-        try {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            const result = await auth.signInWithPopup(provider);
-            
-            showMessage('Login com Google realizado com sucesso!', 'success');
-            
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 2000);
-
-        } catch (error) {
-            console.error('Erro no login com Google:', error);
-            showMessage('Erro ao fazer login com Google.', 'error');
-        }
-    });
-
-    document.querySelector('.btn-social.apple').addEventListener('click', async function() {
-        try {
-            const provider = new firebase.auth.OAuthProvider('apple.com');
-            const result = await auth.signInWithPopup(provider);
-            
-            showMessage('Login com Apple realizado com sucesso!', 'success');
-            
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 2000);
-
-        } catch (error) {
-            console.error('Erro no login com Apple:', error);
-            showMessage('Erro ao fazer login com Apple.', 'error');
-        }
-    });
-
-document.querySelector('.forgot-password a').addEventListener('click', function(e) {
-    e.preventDefault();
-    
-    const identifier = document.getElementById('login-identifier').value;
-    let url = 'esqueci-senha.html';
-    
-    if (identifier && identifier.includes('@')) {
-        url += `?email=${encodeURIComponent(identifier)}`;
+  if (error && typeof error.message === "string") {
+    const text = error.message.toUpperCase();
+    if (text.includes("INVALID_LOGIN_CREDENTIALS") || text.includes("INVALID_PASSWORD") || text.includes("WRONG_PASSWORD") || text.includes("USER_NOT_FOUND")) {
+      return "E-mail ou senha incorretos.";
     }
-    
-    window.location.href = url;
+    if (text.includes("INVALID_EMAIL")) {
+      return "E-mail inválido.";
+    }
+    if (text.includes("TOO_MANY_REQUESTS") || text.includes("TOO_MANY_ATTEMPTS")) {
+      return "Tente novamente mais tarde.";
+    }
+  }
+
+
+  return "Tente novamente.";
+}
+
+function validateInputs(email, password) {
+  if (!email) return "Informe o e-mail.";
+  if (!password) return "Informe a senha.";
+  return null;
+}
+
+
+loginForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  loading.style.display = "block";
+  messageBox.style.display = "none";
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  const invalid = validateInputs(email, password);
+  if (invalid) {
+    showMessage(invalid);
+    loading.style.display = "none";
+    return;
+  }
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+
+      if (!user.emailVerified) {
+        showMessage("Por favor, verifique seu e-mail antes de entrar.");
+        auth.signOut();
+        loading.style.display = "none";
+        return;
+      }
+
+      showMessage("Login realizado com sucesso!", "success");
+      setTimeout(() => window.location.href = "index.html", 1200);
+    })
+    .catch((error) => {
+      console.error("Erro de login:", error);
+      showMessage(simpleErrorMessage(error));
+    })
+    .finally(() => {
+      loading.style.display = "none";
+    });
 });
+
+
+document.getElementById("google-login").addEventListener("click", () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  auth.signInWithPopup(provider)
+    .then((result) => {
+      const user = result.user;
+      console.log("Logado com Google:", user.email);
+      showMessage("Login com Google realizado!", "success");
+      setTimeout(() => window.location.href = "index.html", 1200);
+    })
+    .catch((error) => {
+      console.error("Erro login Google:", error);
+      showMessage(simpleErrorMessage(error));
+    });
 });

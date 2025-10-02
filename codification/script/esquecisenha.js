@@ -1,10 +1,11 @@
 const firebaseConfig = {
-    apiKey: "sua-api-key-aqui",
-    authDomain: "seu-projeto.firebaseapp.com",
-    projectId: "seu-projeto-id",
-    storageBucket: "seu-projeto.appspot.com",
-    messagingSenderId: "seu-sender-id",
-    appId: "seu-app-id"
+  apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
+  authDomain: "boombum-eaf32.firebaseapp.com",
+  projectId: "boombum-eaf32",
+  storageBucket: "boombum-eaf32.firebasestorage.app",
+  messagingSenderId: "827065363375",
+  appId: "1:827065363375:web:913f128e651fcdbe145d5a",
+  measurementId: "G-D7CBRK53E0"
 };
 
 firebase.initializeApp(firebaseConfig);

@@ -129,12 +129,6 @@ input:focus {
     font-size: 0.9rem;
 }
 
-.social-login-text {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #7f8c8d;
-    font-size: 0.9rem;
-}
 
 .social-buttons {
     display: flex;
@@ -147,39 +141,46 @@ input:focus {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 10px;
     padding: 12px;
     border: 1px solid #ddd;
-    border-radius: 5px;
+    border-radius: 8px;
     background: white;
     cursor: pointer;
-    transition: background 0.3s;
-    font-size: 0.9rem;
+    transition: background 0.3s, transform 0.2s;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.btn-social img {
+    width: 20px;
+    height: 20px;
 }
 
 .btn-social:hover {
-    background: #f9f9f9;
+    background: #f5f5f5;
+    transform: translateY(-2px);
 }
 
-.social-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-    font-weight: bold;
+/* Google */
+.btn-social.google {
+    border: 1px solid #dadce0;
 }
 
-.google .social-icon {
-    background: #db4437;
-    color: white;
-    border-radius: 50%;
-}
-
-.apple .social-icon {
+/* Apple */
+.btn-social.apple {
     background: #000;
-    color: white;
-    border-radius: 50%;
+    color: #fff;
+    border: none;
+}
+
+.btn-social.apple img{
+ filter: invert(1);
+
+}
+
+.btn-social.apple:hover {
+    background: #111;
 }
 
 .register-link {
@@ -236,6 +237,9 @@ footer p {
     border: 1px solid #ffcdd2;
 }
 
+.social-login-text{
+    text-align: center;
+}
 .message.info {
     background: #e3f2fd;
     color: #1565c0;
