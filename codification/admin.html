@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="/midia/favicon.png"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOOMBUM Admin - Painel de Controle</title>
+    
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+</head>
+<body>
+
+    <header class="admin-header">
+        <div class="admin-header-content">
+            <a href="admin.html" class="admin-logo">
+                <img src="/midia/iconadmin.png" alt="BOOMBUM Admin Logo">
+                <span class="logo-text">ADMIN</span>
+            </a>
+            <nav class="admin-nav">
+                <a href="#" class="nav-item">Dashboard</a>
+                <a href="#" class="nav-item">Produtos</a>
+                <a href="#" class="nav-item">Pedidos</a>
+                <a href="#" class="nav-item">Clientes</a>
+            </nav>
+            <div class="admin-actions">
+                <span id="admin-user-email" class="admin-user-info"></span>
+                <button id="admin-logout-btn" class="btn-admin-logout">Sair</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="admin-main-content">
+        <div class="admin-container">
+            <h1>Dashboard do Administrador</h1>
+            <p>Bem-vindo(a) ao painel de controle da BOOMBUM. Use os links de navegação para gerenciar sua loja.</p>
+
+            <hr class="admin-divider">
+
+            <h2>Gerenciamento de Produtos</h2>
+            <p>Adicione, edite ou remova produtos do catálogo da loja.</p>
+
+            <form id="product-form" class="admin-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="product-name">Nome do Produto</label>
+                        <input type="text" id="product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-price">Preço (ex: 4299.90)</label>
+                        <input type="number" step="0.01" id="product-price" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="product-stock">Quantidade em Estoque</label>
+                        <input type="number" id="product-stock" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-image">Imagem do Produto</label>
+                        <input type="file" id="product-image" accept="image/*">
+                    </div>
+                </div>
+                <button type="submit" id="save-product-btn" class="btn-primary-admin">Salvar Produto</button>
+                <div id="upload-progress" style="display:none; margin-top: 10px;">Enviando imagem... 0%</div>
+            </form>
+
+            <hr class="admin-divider">
+
+            <h2>Produtos Atuais</h2>
+            <div id="admin-product-list" class="admin-product-list">
+                </div>
+        </div>
+    </main>
+
+    <footer class="admin-footer">
+        <div class="admin-footer-content">
+            <p>&copy; 2025 BOOMBUM Admin - Todos os direitos reservados.</p>
+            <p>Desenvolvido para gerenciamento interno.</p>
+        </div>
+    </footer>
+
+    <script src="/codification/script/admin.js" defer></script>
+
+</body>
+</html>
