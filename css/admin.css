@@ -184,6 +184,16 @@ body {
     font-size: 14px;
 }
 
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    background-color: white;
+}
+
 .form-group input[type="text"],
 .form-group input[type="number"],
 .form-group input[type="file"] {
@@ -195,7 +205,35 @@ body {
     box-sizing: border-box;
 }
 
-.btn-primary-admin {
+.product-list-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+.checkbox-group input {
+    width: auto;
+}
+
+.btn-edit {
+    background-color: #3498db; /* Azul */
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.btn-edit:hover {
+    background-color: #2980b9;
+}
+
+
+.btn-primary-admin,.btn-secondary-admin {
     background-color: #084c8c;
     color: white;
     padding: 12px 25px;
@@ -207,7 +245,13 @@ body {
     transition: background-color 0.3s;
 }
 
+
+
 .btn-primary-admin:hover {
+    background-color: #003366;
+}
+
+.btn-secondary-admin:hover {
     background-color: #003366;
 }
 

@@ -18,89 +18,84 @@ const adminLogoutBtn = document.getElementById('admin-logout-btn');
 const productForm = document.getElementById('product-form');
 const adminProductList = document.getElementById('admin-product-list');
 const uploadProgress = document.getElementById('upload-progress');
-
-function redirectToLogin() {
-    window.location.href = "/codification/login.html"; 
-}
+const saveProductBtn = document.getElementById('save-product-btn');
+const cancelEditBtn = document.getElementById('cancel-edit-btn');
+const formTitle = document.getElementById('form-title');
+let currentEditingId = null; 
 
 auth.onAuthStateChanged(user => {
     if (user) {
         db.collection('users').doc(user.uid).get().then(doc => {
             if (doc.exists && doc.data().role === 'admin') {
                 if (adminUserEmail) adminUserEmail.textContent = user.email;
-                setupEventListeners();
-                loadAdminProducts();
-
+                loadAdminProducts(); 
             } else {
                 alert("Acesso negado. Você não é um administrador.");
-                redirectToLogin();
+                window.location.href = "/paginas/login.html";
             }
         });
     } else {
-        redirectToLogin();
+        window.location.href = "/paginas/login.html";
     }
 });
 
 if (adminLogoutBtn) {
     adminLogoutBtn.addEventListener('click', () => {
-        auth.signOut().then(() => redirectToLogin());
+        auth.signOut().then(() => window.location.href = "/paginas/login.html");
     });
 }
 
-function setupEventListeners() {
-    if (productForm) {
-        productForm.addEventListener('submit', (e) => {
-            e.preventDefault();
+productForm.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-            const name = document.getElementById('product-name').value;
-            const price = parseFloat(document.getElementById('product-price').value);
-            const stock = parseInt(document.getElementById('product-stock').value);
-            const imageFile = document.getElementById('product-image').files[0];
+    const productData = {
+        name: document.getElementById('product-name').value,
+        price: parseFloat(document.getElementById('product-price').value),
+        stock: parseInt(document.getElementById('product-stock').value),
+        category: document.getElementById('product-category').value,
+        isOnOffer: document.getElementById('product-offer').checked
+    };
+    const imageFile = document.getElementById('product-image').files[0];
 
-            const saveProductData = (imageUrl) => {
-                db.collection('products').add({
-                    name: name,
-                    price: price,
-                    stock: stock,
-                    imageUrl: imageUrl, 
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    alert("Produto salvo com sucesso!");
-                    productForm.reset();
-                    if (uploadProgress) uploadProgress.style.display = 'none';
-                }).catch(error => {
-                    console.error("Erro ao salvar produto no Firestore:", error);
-                    alert("Erro ao salvar produto.");
+
+
+    if (imageFile) {
+        const storageRef = storage.ref(`product-images/${Date.now()}_${imageFile.name}`);
+        const uploadTask = storageRef.put(imageFile);
+
+        uploadTask.on('state_changed', 
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                uploadProgress.style.display = 'block';
+                uploadProgress.textContent = `Enviando imagem... ${Math.round(progress)}%`;
+            }, 
+            (error) => console.error("Erro no upload:", error), 
+            () => {
+                uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+                    productData.imageUrl = downloadURL;
+                    saveOrUpdateProduct(productData);
                 });
-            };
-
-            if (imageFile) {
-                const storageRef = storage.ref(`product-images/${Date.now()}_${imageFile.name}`);
-                const uploadTask = storageRef.put(imageFile);
-
-                uploadTask.on('state_changed', (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    uploadProgress.style.display = 'block';
-                    uploadProgress.textContent = `Enviando imagem... ${Math.round(progress)}%`;
-                }, 
-                (error) => {
-                    console.error("Erro no upload da imagem:", error);
-                    alert("Erro ao enviar imagem.");
-                }, 
-                () => {
-                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                        saveProductData(downloadURL);
-                    });
-                });
-            } else {
-                console.log("Nenhuma imagem selecionada. Usando placeholder.");
-                const placeholderImageUrl = "https://via.placeholder.com/300x300.png?text=Sem+Imagem";
-                saveProductData(placeholderImageUrl);
             }
-        });
+        );
+    } else {
+        saveOrUpdateProduct(productData);
+    }
+});
+
+function saveOrUpdateProduct(productData) {
+    if (currentEditingId) {
+        db.collection('products').doc(currentEditingId).update(productData).then(() => {
+            alert("Produto atualizado com sucesso!");
+            resetForm();
+        }).catch(error => console.error("Erro ao atualizar:", error));
+    } else {
+        productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        db.collection('products').add(productData).then(() => {
+            alert("Produto salvo com sucesso!");
+            resetForm();
+        }).catch(error => console.error("Erro ao salvar:", error));
     }
 }
-
 
 function loadAdminProducts() {
     db.collection('products').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
@@ -111,20 +106,57 @@ function loadAdminProducts() {
             productItem.className = 'product-list-item';
             productItem.innerHTML = `
                 <img src="${product.imageUrl}" alt="${product.name}">
-                <span class="product-list-item-name">${product.name}</span>
-                <button class="btn-delete" data-id="${doc.id}">Deletar</button>
+                <span class="product-list-item-name">${product.name} (${product.category})</span>
+                <div class="product-list-actions">
+                    <button class="btn-edit" data-id="${doc.id}">Editar</button>
+                    <button class="btn-delete" data-id="${doc.id}">Deletar</button>
+                </div>
             `;
             adminProductList.appendChild(productItem);
         });
     });
-    adminProductList.addEventListener('click', (e) => {
-        if (e.target && e.target.classList.contains('btn-delete')) {
-            const id = e.target.dataset.id;
-            if (confirm("Tem certeza que deseja deletar este produto?")) {
-                db.collection('products').doc(id).delete()
-                  .then(() => alert("Produto deletado!"))
-                  .catch(error => console.error("Erro ao deletar:", error));
+}
+
+adminProductList.addEventListener('click', (e) => {
+    const target = e.target;
+    const id = target.dataset.id;
+
+    if (target.classList.contains('btn-edit')) {
+        db.collection('products').doc(id).get().then(doc => {
+            if (doc.exists) {
+                const product = doc.data();
+                document.getElementById('product-name').value = product.name;
+                document.getElementById('product-price').value = product.price;
+                document.getElementById('product-stock').value = product.stock;
+                document.getElementById('product-category').value = product.category;
+                
+                document.getElementById('product-offer').checked = product.isOnOffer || false;
+                
+                currentEditingId = id;
+                formTitle.textContent = "Editando Produto";
+                saveProductBtn.textContent = "Atualizar Produto";
+                cancelEditBtn.style.display = "inline-block";
+                window.scrollTo(0, 0);
             }
+        });
+    }
+
+    if (target.classList.contains('btn-delete')) {
+        if (confirm("Tem certeza que deseja deletar este produto?")) {
+            db.collection('products').doc(id).delete()
+              .then(() => alert("Produto deletado!"))
+              .catch(error => console.error("Erro ao deletar:", error));
         }
-    });
+    }
+});
+
+cancelEditBtn.addEventListener('click', resetForm);
+
+function resetForm() {
+    productForm.reset();
+    currentEditingId = null;
+    formTitle.textContent = "Adicionar Novo Produto";
+    saveProductBtn.textContent = "Salvar Produto";
+    cancelEditBtn.style.display = "none";
+    if (uploadProgress) uploadProgress.style.display = 'none';
 }

@@ -2,7 +2,8 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="/midia/favicon.png"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/midia/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOOMBUM Admin - Painel de Controle</title>
     
     <link rel="stylesheet" href="/css/index.css">
@@ -46,7 +47,8 @@
             <p>Adicione, edite ou remova produtos do catálogo da loja.</p>
 
             <form id="product-form" class="admin-form">
-                <div class="form-row">
+                <h3 id="form-title" class="admin-form-title">Adicionar Novo Produto</h3>
+                <input type="hidden" id="product-id"> <div class="form-row">
                     <div class="form-group">
                         <label for="product-name">Nome do Produto</label>
                         <input type="text" id="product-name" required>
@@ -62,11 +64,28 @@
                         <input type="number" id="product-stock" required>
                     </div>
                     <div class="form-group">
-                        <label for="product-image">Imagem do Produto</label>
+                        <label for="product-category">Categoria</label>
+                        <select id="product-category" required>
+                            <option value="" disabled selected>Selecione uma categoria</option>
+                            <option value="hardware">Hardware</option>
+                            <option value="pc-gamer">PC Gamer</option>
+                            <option value="perifericos">Periféricos</option>
+                            <option value="ofertas">Ofertas</option>
+                        </select>
+                    </div>
+                </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="product-offer">
+                        <label for="product-offer">Marcar como oferta</label>
+                    </div>
+                <div class="form-row">
+                    <div class="form-group full-width">
+                         <label for="product-image">Imagem do Produto (Obrigatória ao criar, opcional ao editar)</label>
                         <input type="file" id="product-image" accept="image/*">
                     </div>
                 </div>
                 <button type="submit" id="save-product-btn" class="btn-primary-admin">Salvar Produto</button>
+                <button type="button" id="cancel-edit-btn" class="btn-secondary-admin" style="display: none;">Cancelar Edição</button>
                 <div id="upload-progress" style="display:none; margin-top: 10px;">Enviando imagem... 0%</div>
             </form>
 
