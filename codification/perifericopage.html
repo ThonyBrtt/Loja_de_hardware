@@ -60,11 +60,21 @@
   </header>
 
 <main class="main-content">
-    <div class="category-container">
-        <h1 class="category-title">Perifericos</h1>
-        
-        <div class="product-grid" id="product-grid">
-            </div> 
+
+  <div class="filter-bar">
+    <label for="filterSelect">Filtrar por:</label>
+    <select id="filterSelect">
+      <option value="recentes">Mais recentes</option>
+      <option value="precoMenor">Menor preço</option>
+      <option value="precoMaior">Maior preço</option>
+      <option value="alfabetico">Ordem alfabética (A–Z)</option>
+    </select>
+  </div>
+
+  <div class="category-container">
+    <h1 class="category-title">Periféricos</h1>
+    <div class="product-grid" id="product-grid"></div>
+  </div>
 
     <footer>
     <div class="footer-container">

@@ -61,3 +61,53 @@ if (!pageIdentifier) {
         productGrid.innerHTML = `<p class="error-message">Erro ao carregar produtos. Verifique o console (F12) para um link de criação de índice no Firestore.</p>`;
     });
 }
+
+const filterSelect = document.getElementById('filterSelect');
+let currentQuery = null;
+
+function aplicarFiltro(tipoFiltro) {
+  if (!pageIdentifier) return;
+
+  let query = db.collection('products');
+
+  // Base do filtro: categoria ou ofertas
+  if (pageIdentifier === 'ofertas') {
+    query = query.where('isOnOffer', '==', true);
+  } else {
+    query = query.where('category', '==', pageIdentifier);
+  }
+
+  // Mantém o listener principal
+  if (currentQuery) currentQuery();
+
+  currentQuery = query.onSnapshot(snapshot => {
+    let produtos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // Aplica a ordenação local (sem precisar de índice)
+    switch (tipoFiltro) {
+      case 'precoMenor':
+        produtos.sort((a, b) => a.price - b.price);
+        break;
+      case 'precoMaior':
+        produtos.sort((a, b) => b.price - a.price);
+        break;
+      case 'alfabetico':
+        produtos.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'ofertas':
+        produtos = produtos.filter(p => p.isOnOffer === true);
+        break;
+      default:
+        produtos.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds);
+        break;
+    }
+
+    renderProducts(produtos.map(p => ({ data: () => p })));
+  }, error => {
+    console.error("Erro ao aplicar filtro:", error);
+    productGrid.innerHTML = `<p class="error-message">Erro ao aplicar filtro. Veja o console.</p>`;
+  });
+}
+
+filterSelect.addEventListener('change', e => aplicarFiltro(e.target.value));
+aplicarFiltro('recentes');
