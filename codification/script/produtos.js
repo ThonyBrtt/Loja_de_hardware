@@ -1,3 +1,6 @@
+// ==========================================================
+// CONFIGURAÇÃO E INICIALIZAÇÃO
+// ==========================================================
 const firebaseConfig = {
     apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
     authDomain: "boombum-eaf32.firebaseapp.com",
@@ -11,20 +14,34 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// ==========================================================
+// ELEMENTOS E DADOS DA PÁGINA
+// ==========================================================
 const productGrid = document.getElementById('product-grid');
+const filterSelect = document.getElementById('filterSelect');
 const pageIdentifier = document.body.dataset.category; 
+let currentQuery = null; // Guarda a função de cancelamento do listener atual
+
+// ==========================================================
+// FUNÇÃO DE RENDERIZAÇÃO DE PRODUTOS
+// ==========================================================
+
 function renderProducts(docs) {
     if (!docs.length) {
         productGrid.innerHTML = '<p class="empty-category-message">Nenhum produto encontrado nesta categoria.</p>';
         return;
     }
-    productGrid.innerHTML = '';
+
+    productGrid.innerHTML = ''; // Limpa o grid para evitar duplicação
     docs.forEach(doc => {
         const product = doc.data();
+        
+        // Formatação de dados para exibição
         const imageUrl = product.imageUrl || "https://via.placeholder.com/300x300.png?text=Sem+Imagem";
         const formattedPrice = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         const installmentPrice = (product.price / 12).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+        // Cria o HTML do card do produto
         const cardHTML = `
             <div class="product-card">
                 <img src="${imageUrl}" alt="${product.name}">
@@ -41,49 +58,30 @@ function renderProducts(docs) {
     });
 }
 
-if (!pageIdentifier) {
-    console.error("Identificador de página não encontrado! Adicione data-category='...' na tag <body>.");
-} else {
-    let query = db.collection('products');
-
-    if (pageIdentifier === 'ofertas') {
-        console.log("Filtrando por produtos em oferta...");
-        query = query.where('isOnOffer', '==', true);
-    } else {
-        console.log(`Filtrando por categoria: ${pageIdentifier}`);
-        query = query.where('category', '==', pageIdentifier);
-    }
-    
-    query.orderBy('createdAt', 'desc').onSnapshot(snapshot => {
-        renderProducts(snapshot.docs);
-    }, error => {
-        console.error("Erro ao buscar produtos:", error);
-        productGrid.innerHTML = `<p class="error-message">Erro ao carregar produtos. Verifique o console (F12) para um link de criação de índice no Firestore.</p>`;
-    });
-}
-
-const filterSelect = document.getElementById('filterSelect');
-let currentQuery = null;
+// ==========================================================
+// FUNÇÃO PRINCIPAL DE FILTRAGEM E ORDENAÇÃO
+// ==========================================================
 
 function aplicarFiltro(tipoFiltro) {
-  if (!pageIdentifier) return;
+  if (!pageIdentifier) return; // Aborta se a categoria da página não for definida
 
+  // Constrói a consulta base (filtra por categoria ou oferta)
   let query = db.collection('products');
-
-  // Base do filtro: categoria ou ofertas
   if (pageIdentifier === 'ofertas') {
     query = query.where('isOnOffer', '==', true);
   } else {
     query = query.where('category', '==', pageIdentifier);
   }
 
-  // Mantém o listener principal
+  // Cancela o listener anterior para evitar múltiplas execuções
   if (currentQuery) currentQuery();
 
+  // Cria um novo listener em tempo real e armazena sua função de cancelamento
   currentQuery = query.onSnapshot(snapshot => {
+    // Converte os documentos para um array JavaScript
     let produtos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-    // Aplica a ordenação local (sem precisar de índice)
+    // Ordena o array de produtos no navegador (client-side)
     switch (tipoFiltro) {
       case 'precoMenor':
         produtos.sort((a, b) => a.price - b.price);
@@ -94,14 +92,12 @@ function aplicarFiltro(tipoFiltro) {
       case 'alfabetico':
         produtos.sort((a, b) => a.name.localeCompare(b.name));
         break;
-      case 'ofertas':
-        produtos = produtos.filter(p => p.isOnOffer === true);
-        break;
-      default:
-        produtos.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds);
+      default: // 'recentes'
+        produtos.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
         break;
     }
 
+    // Re-empacota os dados para o formato esperado e renderiza na tela
     renderProducts(produtos.map(p => ({ data: () => p })));
   }, error => {
     console.error("Erro ao aplicar filtro:", error);
@@ -109,5 +105,14 @@ function aplicarFiltro(tipoFiltro) {
   });
 }
 
-filterSelect.addEventListener('change', e => aplicarFiltro(e.target.value));
+// ==========================================================
+// EVENT LISTENERS E EXECUÇÃO INICIAL
+// ==========================================================
+
+// Quando o usuário muda a opção de filtro, a função é chamada novamente
+if (filterSelect) {
+  filterSelect.addEventListener('change', e => aplicarFiltro(e.target.value));
+}
+
+// Carrega os produtos com a ordenação padrão ('recentes') ao abrir a página
 aplicarFiltro('recentes');
