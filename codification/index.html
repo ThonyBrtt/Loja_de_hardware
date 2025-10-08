@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <link rel="icon" type="image/png" href="../midia/favicon.png" style="border-radius: 20PX;">
-  <link rel="icon" type="image/png" href="../midia/">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boombum | Oferta Gamer!</title>
   <link rel="stylesheet" href="../css/index.css">
+  <script src="../codification/script/sidebar.js" defer></script>
 </head>
-<body>
 
+<body>
   <header id="mainHeader">
     <div class="topbar">
       <div class="logo">
-      <a href="index.html"><img src="../midia/icon.png" alt="Logo"></a>
+        <a href="index.html"><img src="../midia/icon.png" alt="Logo"></a>
       </div>
       <div class="search-bar">
         <input type="text" placeholder="Busque no BoomBum...">
@@ -22,20 +22,16 @@
       <div class="actions">
         <div class="icon">
           <img src="../midia/header/user.png" alt="Usuário">
-          <div style="display:flex; flex-direction:column; font-size:13px; align-items:flex-start;">
-            <div>
-              <a href="login.html" style="text-decoration:underline; color:white; margin-right:5px;">Entre</a>
+          <div id="user-info" style="display:flex; flex-direction:column; font-size:13px; align-items:flex-start; color:white;">
+            <div id="user-actions">
+              <a href="login.html" id="login-link" style="text-decoration:underline; color:white; margin-right:5px;">Entre</a>
               <span style="margin-right:5px;">ou</span><br>
-              <a href="cadastro.html" style="text-decoration:underline; color:white;">Cadastre-se</a>
+              <a href="cadastro.html" id="signup-link" style="text-decoration:underline; color:white;">Cadastre-se</a>
             </div>
           </div>
         </div>
-        <div class="icon">
-          <img src="../midia/header/sac.png" alt="SAC">
-        </div>
-        <div class="icon">
-          <img src="../midia/header/carshopping.png" alt="Carrinho">
-        </div>
+        <div class="icon"><img src="../midia/header/sac.png" alt="SAC"></div>
+        <div class="icon"><img src="../midia/header/carshopping.png" alt="Carrinho"></div>
       </div>
     </div>
 
@@ -53,13 +49,12 @@
         </div>
       </div>
 
-      <a href="#">Ofertas</a>
+      <a href="ofertaspage.html">Ofertas</a>
       <a href="hardwarepage.html">Hardware</a>
       <a href="Pcgamerpage.html">PC Gamer</a>
       <a href="perifericopage.html">Periféricos</a>
     </div>
   </header>
-
 
   <div class="carousel-container">
     <div class="carousel-slides">
@@ -73,7 +68,6 @@
     <button class="carousel-btn prev">&#10094;</button>
     <button class="carousel-btn next">&#10095;</button>
   </div>
-
 
   <div class="orange-bar">BLACK NINJA</div>
 
@@ -117,6 +111,7 @@
       </div>
     </div>
   </footer>
+
 
   <script>
     const slides = document.querySelector('.carousel-slides');
@@ -168,29 +163,21 @@
     nextBtn.addEventListener('click', () => moveToSlide(index + 1));
     setInterval(() => moveToSlide(index + 1), 5000);
 
-
     const header = document.getElementById("mainHeader");
     function checkScroll() {
-      if (window.scrollY <= 20) {
-        header.classList.add("expanded");
-      } else {
-        header.classList.remove("expanded");
-      }
+      if (window.scrollY <= 20) header.classList.add("expanded");
+      else header.classList.remove("expanded");
     }
     window.addEventListener("scroll", checkScroll);
     checkScroll();
-
-
-    const dropdownLinks = document.querySelectorAll('.dropdown-content a');
-    const productColumn = document.querySelector('.product-column');
-    const orangeBar = document.querySelector('.orange-bar');
-
-    dropdownLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        productColumn.style.backgroundColor = "#e0e0e0"; 
-        orangeBar.style.backgroundColor = "#cc5200"; 
-      });
-    });
   </script>
+
+  <!-- Firebase e scripts -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script src="/codification/script/conta.js"></script>
+  
 </body>
 </html>
