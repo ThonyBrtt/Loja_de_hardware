@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Finalizar Compra | BoomBum</title>
+  <link rel="stylesheet" href="../css/compras.css"> <!-- CSS separado -->
+</head>
+<body class="page-comprar">
+  <header>
+    <h1>Finalizar Compra</h1>
+    <div class="header-buttons">
+      <button id="voltar">← Voltar</button>
+      <button id="cancelarCompra">Cancelar Compra</button>
+    </div>
+  </header>
+
+  <main id="detalhesProduto">
+    <p>Carregando informações do produto...</p>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
+      authDomain: "boombum-eaf32.firebaseapp.com",
+      projectId: "boombum-eaf32",
+      storageBucket: "boombum-eaf32.firebasestorage.app",
+      messagingSenderId: "827065363375",
+      appId: "1:827065363375:web:913f128e651fcdbe145d5a",
+      measurementId: "G-D7CBRK53E0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    document.getElementById('voltar').addEventListener('click', () => window.history.back());
+    document.getElementById('cancelarCompra').addEventListener('click', () => {
+      if(confirm("Deseja realmente cancelar a compra?")) {
+        localStorage.removeItem('produtoSelecionado');
+        window.location.href = '/index.html';
+      }
+    });
+
+    const produtoId = localStorage.getItem('produtoSelecionado');
+
+    if(!produtoId) {
+      document.getElementById('detalhesProduto').innerHTML = '<p>Nenhum produto selecionado.</p>';
+    } else {
+      db.collection('products').doc(produtoId).get().then(doc => {
+        if(!doc.exists) return document.getElementById('detalhesProduto').innerHTML = '<p>Produto não encontrado.</p>';
+
+        const produto = doc.data();
+        const estoque = produto.stock || 10;
+        const formattedPrice = produto.price.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+
+        document.getElementById('detalhesProduto').innerHTML = `
+          <div class="produto-card-realista">
+            <img src="${produto.imageUrl}" alt="${produto.name}">
+            <h2>${produto.name}</h2>
+            <p>Preço unitário: <strong>${formattedPrice}</strong></p>
+            <p id="estoque">Estoque disponível: <strong>${estoque}</strong></p>
+
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" min="1" max="${estoque}" value="1">
+
+            <label for="pagamento">Método de Pagamento:</label>
+            <select id="pagamento">
+              <option value="cartao">Cartão de Crédito</option>
+              <option value="pix">PIX</option>
+            </select>
+
+            <div id="parcelamento-container">
+              <label for="parcelas">Parcelamento:</label>
+              <select id="parcelas">
+                <option value="1">1x de ${formattedPrice}</option>
+                <option value="2">2x de ${(produto.price/2).toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</option>
+                <option value="3">3x de ${(produto.price/3).toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</option>
+                <option value="6">6x de ${(produto.price/6).toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</option>
+                <option value="12">12x de ${(produto.price/12).toLocaleString('pt-BR', {style:'currency', currency:'BRL'})}</option>
+              </select>
+            </div>
+
+            <button id="finalizarCompra">Finalizar Compra</button>
+          </div>
+        `;
+
+        const pagamentoSelect = document.getElementById('pagamento');
+        const parcelasDiv = document.getElementById('parcelamento-container');
+
+        pagamentoSelect.addEventListener('change', () => {
+          parcelasDiv.style.display = pagamentoSelect.value === 'pix' ? 'none' : 'block';
+        });
+
+        document.getElementById('finalizarCompra').addEventListener('click', () => {
+          const quantidade = parseInt(document.getElementById('quantidade').value);
+
+          db.collection('products').doc(produtoId).get().then(prodDoc => {
+            const estoqueAtual = prodDoc.data().stock || 0;
+            if(quantidade > estoqueAtual) return alert("Quantidade maior que o estoque!");
+            return db.collection('products').doc(produtoId).update({
+              stock: estoqueAtual - quantidade
+            });
+          }).then(() => {
+            alert(`Compra finalizada com sucesso!\nMétodo: ${pagamentoSelect.value}\nQuantidade: ${quantidade}`);
+            localStorage.removeItem('produtoSelecionado');
+            window.location.href = '/index.html';
+          }).catch(err => {
+            console.error(err);
+            alert("Erro ao finalizar compra.");
+          });
+        });
+      }).catch(err => {
+        console.error(err);
+        document.getElementById('detalhesProduto').innerHTML = '<p>Erro ao carregar produto.</p>';
+      });
+    }
+  </script>
+</body>
+</html>

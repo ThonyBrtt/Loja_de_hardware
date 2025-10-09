@@ -414,4 +414,223 @@ footer p { margin: 6px 0; font-size: 14px; line-height: 1.4; }
   box-shadow: 0 0 6px #FFCC00;
 }
 
-    
+#produto-detalhe {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+#form-pagamento {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: 0 auto;
+  gap: 10px;
+}
+
+#form-pagamento input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+#form-pagamento button {
+  background-color: #ffcc00;
+  border: none;
+  padding: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.page-comprar #produto-detalhe {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.page-comprar #form-pagamento {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: 0 auto;
+  gap: 10px;
+}
+
+.page-comprar #form-pagamento input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.page-comprar #form-pagamento button {
+  background-color: #ffcc00;
+  border: none;
+  padding: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+/* ===============================
+        Finalizar Compra
+=============================== */
+
+body.page-comprar {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    padding-top: 150px;
+    margin: 0;
+}
+
+body.page-comprar header {
+    background-color: #084c8c;
+    color: white;
+    padding: 8px 30px;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    transition: all 0.4s ease;
+}
+
+body.page-comprar header h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+body.page-comprar .header-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+body.page-comprar .header-buttons button {
+    background-color: #ffcc00;
+    color: #084c8c;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+body.page-comprar .header-buttons button:hover {
+    background-color: #e6b800;
+}
+
+body.page-comprar #detalhesProduto {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+body.page-comprar .produto-card-realista {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    max-width: 500px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+body.page-comprar .produto-card-realista img {
+    width: 280px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+body.page-comprar .produto-card-realista img:hover {
+    transform: scale(1.05);
+}
+
+body.page-comprar .produto-card-realista h2 {
+    font-size: 24px;
+    color: #084c8c;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+body.page-comprar .produto-card-realista p {
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+body.page-comprar label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 6px;
+    color: #084c8c;
+}
+
+body.page-comprar input[type="number"],
+body.page-comprar select {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+body.page-comprar input[type="number"]:focus,
+body.page-comprar select:focus {
+    border-color: #ffcc00;
+    box-shadow: 0 0 6px rgba(255,204,0,0.5);
+    outline: none;
+}
+
+body.page-comprar #parcelamento-container {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+body.page-comprar #parcelamento-container select {
+    width: 50%;
+}
+
+body.page-comprar #finalizarCompra {
+    background-color: #ff6600;
+    color: white;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+body.page-comprar #finalizarCompra:hover {
+    background-color: #e65c00;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    body.page-comprar .produto-card-realista img {
+        width: 200px;
+    }
+
+    body.page-comprar input[type="number"],
+    body.page-comprar select {
+        width: 90%;
+    }
+
+    body.page-comprar .header-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
