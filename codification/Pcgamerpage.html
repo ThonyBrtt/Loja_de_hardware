@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOOMBUM | Pc gamer</title>
     <link rel="stylesheet" href="../css/compras.css">
+    <script src="../codification/script/sidebar.js" defer></script>
 </head>
 <body data-category="pc-gamer">
-
   <header id="mainHeader">
     <div class="topbar">
       <div class="logo">
@@ -21,11 +21,11 @@
       <div class="actions">
         <div class="icon">
           <img src="../midia/header/user.png" alt="Usuário">
-          <div style="display:flex; flex-direction:column; font-size:13px; align-items:flex-start;">
-            <div>
-              <a href="login.html" style="text-decoration:underline; color:white; margin-right:5px;">Entre</a>
+          <div id="user-info" style="display:flex; flex-direction:column; font-size:13px; align-items:flex-start; color:white;">
+            <div id="user-actions">
+              <a href="login.html" id="login-link" style="text-decoration:underline; color:white; margin-right:5px;">Entre</a>
               <span style="margin-right:5px;">ou</span><br>
-              <a href="cadastro.html" style="text-decoration:underline; color:white;">Cadastre-se</a>
+              <a href="cadastro.html" id="signup-link" style="text-decoration:underline; color:white;">Cadastre-se</a>
             </div>
           </div>
         </div>
@@ -112,10 +112,12 @@
       </div>
     </div>
   </footer>
-
-</body>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-     <script src="/codification/script/produtos.js"></script> 
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="/codification/script/produtos.js"></script> 
+<script src="/codification/script/conta.js"></script>
+
+     
     </body>
 </html>

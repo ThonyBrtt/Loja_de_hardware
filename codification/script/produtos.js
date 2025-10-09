@@ -22,7 +22,7 @@ const pageIdentifier = document.body.dataset.category;
 let currentQuery = null;
 
 // ================================
-// 🧩 FUNÇÃO PARA RENDERIZAR PRODUTOS
+// 🧩 FUNÇÃO PARA RENDERIZAR PRODUTOS (com carrossel manual)
 // ================================
 function renderProducts(docs) {
   if (!docs.length) {
@@ -35,13 +35,30 @@ function renderProducts(docs) {
   docs.forEach(doc => {
     const product = doc.data();
     const productId = doc.id;
-    const imageUrl = product.imageUrl || "https://via.placeholder.com/300x300.png?text=Sem+Imagem";
+
+    const images = [
+      product.imageUrl1,
+      product.imageUrl2,
+      product.imageUrl3
+    ].filter(Boolean); 
+
     const formattedPrice = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     const installmentPrice = (product.price / 12).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+
+    const carouselImages = images.map((img, i) =>
+      `<img src="${img}" class="carousel-img ${i === 0 ? 'active' : ''}" alt="${product.name}">`
+    ).join('');
+
     const cardHTML = `
       <div class="product-card">
-        <img src="${imageUrl}" alt="${product.name}">
+        <div class="carousel-container" data-current="0">
+          ${carouselImages}
+          ${images.length > 1 ? `
+            <button class="carousel-btn left">❮</button>
+            <button class="carousel-btn right">❯</button>
+          ` : ''}
+        </div>
         <h3 class="product-name">${product.name}</h3>
         <p class="product-price-new">${formattedPrice}</p>
         <p class="product-installments">12x de ${installmentPrice} sem juros</p>
@@ -55,13 +72,39 @@ function renderProducts(docs) {
     productGrid.innerHTML += cardHTML;
   });
 
-  // Adiciona eventos aos botões após renderizar
+  initCarousels();
   addButtonEvents();
 }
 
-// ================================
-// 🛒 FUNÇÃO DE EVENTOS DOS BOTÕES
-// ================================
+
+function initCarousels() {
+  document.querySelectorAll('.carousel-container').forEach(container => {
+    const imgs = container.querySelectorAll('.carousel-img');
+    const left = container.querySelector('.carousel-btn.left');
+    const right = container.querySelector('.carousel-btn.right');
+
+    if (!imgs.length) return;
+
+    let current = 0;
+
+    function showImage(index) {
+      imgs.forEach((img, i) => img.classList.toggle('active', i === index));
+      container.dataset.current = index;
+    }
+
+    left?.addEventListener('click', () => {
+      current = (current - 1 + imgs.length) % imgs.length;
+      showImage(current);
+    });
+
+    right?.addEventListener('click', () => {
+      current = (current + 1) % imgs.length;
+      showImage(current);
+    });
+  });
+}
+
+
 function addButtonEvents() {
   document.querySelectorAll('.btn-buy').forEach(btn => {
     btn.addEventListener('click', e => {
@@ -78,17 +121,13 @@ function addButtonEvents() {
   });
 }
 
-// ================================
-// 🛍️ FUNÇÃO DE COMPRAR
-// ================================
+
 function comprarProduto(produtoId) {
   localStorage.setItem('produtoSelecionado', produtoId);
   window.location.href = 'comprar.html';
 }
 
-// ================================
-// 🔍 FILTROS E BUSCA DO FIRESTORE
-// ================================
+
 if (!pageIdentifier) {
   console.error("Identificador de página não encontrado! Adicione data-category='...' na tag <body>.");
 } else {
@@ -108,9 +147,7 @@ if (!pageIdentifier) {
   });
 }
 
-// ================================
-// ⚙️ FILTRO DE PRODUTOS
-// ================================
+
 const filterSelect = document.getElementById('filterSelect');
 
 function aplicarFiltro(tipoFiltro) {
@@ -124,7 +161,7 @@ function aplicarFiltro(tipoFiltro) {
     query = query.where('category', '==', pageIdentifier);
   }
 
-  if (currentQuery) currentQuery(); // cancela listener anterior
+  if (currentQuery) currentQuery(); 
 
   currentQuery = query.onSnapshot(snapshot => {
     let produtos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -154,9 +191,7 @@ function aplicarFiltro(tipoFiltro) {
 filterSelect.addEventListener('change', e => aplicarFiltro(e.target.value));
 aplicarFiltro('recentes');
 
-// ================================
-// 🏦 FUNÇÃO PARA FINALIZAR COMPRA (comprar.html)
-// ================================
+
 function finalizarCompra() {
   const produtoId = localStorage.getItem('produtoSelecionado');
   if (!produtoId) return alert("Nenhum produto selecionado!");
@@ -166,14 +201,12 @@ function finalizarCompra() {
 
   const produtoRef = db.collection('products').doc(produtoId);
 
-  // Buscar estoque atualizado direto no Firestore
   produtoRef.get().then(doc => {
     if (!doc.exists) return alert("Produto não encontrado.");
     const estoqueAtual = doc.data().stock || 0;
 
     if (quantidade > estoqueAtual) return alert("Quantidade maior que o estoque!");
 
-    // Atualiza estoque
     return produtoRef.update({ stock: estoqueAtual - quantidade });
   }).then(() => {
     alert(`Compra finalizada com sucesso!\nMétodo: ${pagamento}\nQuantidade: ${quantidade}`);

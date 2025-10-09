@@ -1,6 +1,4 @@
-// === /js/sidebar.js ===
 
-// 1️⃣ Garante que o CSS da sidebar seja carregado
 (function loadSidebarCSS() {
   const existing = document.querySelector('link[href="../css/sidebar.css"]');
   if (!existing) {

@@ -18,9 +18,9 @@ const auth = firebase.auth();
 // LÓGICA DA PÁGINA DE RECUPERAÇÃO DE SENHA
 // ==========================================================
 
-// Garante que o script só rode após o carregamento completo do HTML.
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Seleciona os elementos da página que serão manipulados.
+
     const form = document.getElementById('recovery-form');
     const loading = document.getElementById('loading');
     const message = document.getElementById('message');
@@ -34,34 +34,28 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => { message.style.display = 'none'; }, 5000);
     }
 
-    /** Exibe a tela de instruções e esconde o formulário. */
     function showInstructions() {
         instructions.style.display = 'block';
         form.style.display = 'none';
     }
-
-    /** Esconde a tela de instruções e exibe o formulário. */
     function hideInstructions() {
         instructions.style.display = 'none';
         form.style.display = 'block';
     }
 
-    // Adiciona um evento ao link 'Voltar' para retornar à tela do formulário.
     document.querySelector('.login-link a').addEventListener('click', function(e) {
         if (instructions.style.display === 'block') {
             e.preventDefault();
             hideInstructions();
-            emailInput.value = ''; // Limpa o campo de email ao voltar.
+            emailInput.value = ''; 
         }
     });
 
-    // Adiciona o evento de envio ao formulário de recuperação.
     form.addEventListener('submit', async function(e) {
-        e.preventDefault(); // Impede o recarregamento da página.
+        e.preventDefault(); 
         
         const email = emailInput.value.trim();
 
-        // Validações básicas do campo de email.
         if (!email) {
             showMessage('Por favor, digite seu email.', 'error');
             return;
@@ -74,11 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             loading.style.display = 'block';
-            
-            // Chama a função do Firebase para enviar o email de redefinição de senha.
+
             await auth.sendPasswordResetEmail(email);
             
-            // Se o envio for bem-sucedido, esconde o formulário e mostra as instruções.
             loading.style.display = 'none';
             showInstructions();
             
@@ -86,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loading.style.display = 'none';
             console.error('Erro ao enviar email de recuperação:', error);
             
-            // Traduz erros comuns do Firebase para mensagens amigáveis.
+
             let errorMessage = 'Erro ao enviar email: ';
             switch (error.code) {
                 case 'auth/user-not-found':
@@ -105,11 +97,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Verifica se a URL da página contém um parâmetro 'email' (ex: vindo da página de login).
     const urlParams = new URLSearchParams(window.location.search);
     const emailParam = urlParams.get('email');
     if (emailParam) {
-        // Se houver, preenche automaticamente o campo de email.
         emailInput.value = emailParam;
     }
 });
