@@ -1,9 +1,8 @@
 // ==========================================================
 // IMPORTS DO FIREBASE (versão modular)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-
+const { initializeApp } = require("firebase/app");
+const { getAuth, signInWithEmailAndPassword, onAuthStateChanged } = require("firebase/auth");
+const { getFirestore, doc, getDoc } = require("firebase/firestore");
 // ==========================================================
 // CONFIGURAÇÃO E INICIALIZAÇÃO DO FIREBASE
 // ==========================================================
@@ -139,3 +138,10 @@ if (googleLoginButton) {
         }
     });
 }
+
+module.exports = {
+  validateInputs,
+  simpleErrorMessage,
+  showMessage,
+  checkAdminRoleAndRedirect
+};
