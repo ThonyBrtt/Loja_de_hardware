@@ -7,6 +7,7 @@
   <title>Boombum | Oferta Gamer!</title>
   <link rel="stylesheet" href="../css/index.css">
   <script src="../codification/script/sidebar.js" defer></script>
+  <script src="../codification/script/index.js"></script>
 </head>
 
 <body>
@@ -60,17 +61,29 @@
       <img src="../midia/carrosel/blackninja.png" alt="Slide 1" data-bg="#000C15">
       <img src="../midia/carrosel/fifaclub.png" alt="Slide 2" data-bg="#000000">
       <img src="../midia/carrosel/35.png" alt="Slide 3" data-bg="#020C2D">
-      <img src="../midia/carrosel/700off.png" alt="Slide 4" data-bg="#c8f221">
-      <img src="../midia/carrosel/iphon.png" alt="Slide 5" data-bg="#000000">
-      <img src="../midia/carrosel/PlacadeVideos.png" alt="Slide 6" data-bg="#05e28c">
+      <img src="../midia/carrosel/PlacadeVideos.png" alt="Slide 4" data-bg="#05e28c">
+      <img src="../midia/carrosel/700off.png" alt="Slide 5" data-bg="#c8f221">
+      <img src="../midia/carrosel/iphon.png" alt="Slide 6" data-bg="#000000">
+      <img src="../midia/carrosel/PlacadeVideos.png" alt="Slide 7" data-bg="#05e28c">
     </div>
     <button class="carousel-btn prev">&#10094;</button>
     <button class="carousel-btn next">&#10095;</button>
   </div>
   <div class="orange-bar">BLACK NINJA</div>
   <div class="product-column">
-    <h2>Produtos em destaque</h2>
-    <p>Aqui você pode inserir os produtos da loja...</p>
+   <main class="main-content">
+        <section class="product-scroller-section">
+            <div class="scroller-header">
+                <h2 class="category-title">Produtos em Destaque</h2>
+                <div class="scroller-nav">
+                    <button id="scroll-prev-btn" class="carousel-product-btn prev">&#10094;</button>
+                    <button id="scroll-next-btn" class="carousel-product-btn next">&#10095;</button>
+                </div>
+            </div>
+            <div class="product-scroller" id="product-grid">
+                </div>
+        </section>
+    </main>
   </div>
 
   <footer>
