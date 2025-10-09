@@ -1,7 +1,12 @@
 // ==========================================================
+// IMPORTS DO FIREBASE (versão modular)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+// ==========================================================
 // CONFIGURAÇÃO E INICIALIZAÇÃO DO FIREBASE
 // ==========================================================
-
 const firebaseConfig = {
     apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
     authDomain: "boombum-eaf32.firebaseapp.com",
@@ -12,15 +17,13 @@ const firebaseConfig = {
     measurementId: "G-D7CBRK53E0"
 };
 
-// Inicializa os serviços do Firebase com a configuração acima.
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 // ==========================================================
 // SELEÇÃO DE ELEMENTOS DO HTML
 // ==========================================================
-
 const loginForm = document.getElementById("login-form");
 const emailInput = document.getElementById("login-email");
 const passwordInput = document.getElementById("login-password");
@@ -30,7 +33,6 @@ const loading = document.getElementById("loading");
 // ==========================================================
 // FUNÇÕES AUXILIARES
 // ==========================================================
-
 function showMessage(text, type = "error") {
     messageBox.style.display = "block";
     messageBox.className = "message " + type;
@@ -64,48 +66,38 @@ function validateInputs(email, password) {
 // ==========================================================
 // LÓGICA PRINCIPAL DE LOGIN E REDIRECIONAMENTO
 // ==========================================================
+async function checkAdminRoleAndRedirect(user) {
+    try {
+        const userRef = doc(db, 'users', user.uid);
+        const docSnap = await getDoc(userRef);
 
-function checkAdminRoleAndRedirect(user) {
-    // Busca o documento do usuário na coleção 'users' usando seu UID.
-    const userDocRef = db.collection('users').doc(user.uid);
-
-    userDocRef.get().then((doc) => {
-        // Verifica se o documento existe e se o campo 'role' é 'admin'.
-        if (doc.exists && doc.data().role === 'admin') {
+        if (docSnap.exists() && docSnap.data().role === 'admin') {
             showMessage("Bem-vindo(a), Admin!", "success");
             setTimeout(() => window.location.href = "admin.html", 1200);
         } else {
-            // Se não for admin ou o documento não existir, trata como usuário comum.
             showMessage("Login realizado com sucesso!", "success");
             setTimeout(() => window.location.href = "index.html", 1200);
         }
-    }).catch((error) => {
-        // Em caso de erro na leitura do Firestore, redireciona para a página principal por segurança.
+    } catch (error) {
         console.error("Erro ao verificar permissão:", error);
         showMessage("Login realizado com sucesso!", "success");
         setTimeout(() => window.location.href = "index.html", 1200);
-    }).finally(() => {
-        // Garante que o indicador de "carregando" seja escondido.
-        if (loading) {
-            loading.style.display = "none";
-        }
-    });
+    } finally {
+        if (loading) loading.style.display = "none";
+    }
 }
 
 // ==========================================================
-// EVENT LISTENERS (OUVINTES DE EVENTOS)
+// EVENT LISTENERS
 // ==========================================================
-
-// --- Login com E-mail e Senha ---
 if (loginForm) {
-    loginForm.addEventListener("submit", (e) => {
-        e.preventDefault(); // Impede o recarregamento da página.
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
         loading.style.display = "block";
 
         const email = emailInput.value.trim();
         const password = passwordInput.value;
 
-        // Valida os campos antes de prosseguir.
         const invalid = validateInputs(email, password);
         if (invalid) {
             showMessage(invalid);
@@ -113,47 +105,37 @@ if (loginForm) {
             return;
         }
 
-        // Tenta fazer o login com o Firebase Auth.
-        auth.signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
 
-                // Verifica se o email do usuário foi verificado.
-                if (!user.emailVerified) {
-                    showMessage("Por favor, verifique seu e-mail antes de entrar.");
-                    auth.signOut();
-                    loading.style.display = "none";
-                    return;
-                }
-                
-                // Se o login for bem-sucedido, chama a função para verificar a permissão.
-                checkAdminRoleAndRedirect(user);
-            })
-            .catch((error) => {
-                // Se o login falhar, exibe uma mensagem de erro.
-                showMessage(simpleErrorMessage(error));
+            if (!user.emailVerified) {
+                showMessage("Por favor, verifique seu e-mail antes de entrar.");
+                await signOut(auth);
                 loading.style.display = "none";
-            });
+                return;
+            }
+
+            await checkAdminRoleAndRedirect(user);
+        } catch (error) {
+            showMessage(simpleErrorMessage(error));
+            loading.style.display = "none";
+        }
     });
 }
 
-// --- Login com Google ---
 const googleLoginButton = document.getElementById("google-login");
 if (googleLoginButton) {
-    googleLoginButton.addEventListener("click", () => {
+    googleLoginButton.addEventListener("click", async () => {
         loading.style.display = "block";
-        const provider = new firebase.auth.GoogleAuthProvider();
+        const provider = new GoogleAuthProvider();
 
-        // Abre o pop-up de login do Google.
-        auth.signInWithPopup(provider)
-            .then((result) => {
-                // Se o login for bem-sucedido, chama a função para verificar a permissão.
-                checkAdminRoleAndRedirect(result.user);
-            })
-            .catch((error) => {
-                // Se falhar, exibe uma mensagem de erro.
-                showMessage(simpleErrorMessage(error));
-                loading.style.display = "none";
-            });
+        try {
+            const result = await signInWithPopup(auth, provider);
+            await checkAdminRoleAndRedirect(result.user);
+        } catch (error) {
+            showMessage(simpleErrorMessage(error));
+            loading.style.display = "none";
+        }
     });
 }

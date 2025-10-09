@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="midia/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boombum | Oferta Gamer!</title>
+  <link rel="stylesheet" href="../css/index.css">
+  <script src="../codification/script/sidebar.js" defer></script>
+  <script src="../codification/script/index.js"></script>
+</head>
+
+<body>
+  <header id="mainHeader">
+    <div class="topbar">
+      <div class="logo">
+        <a href="index.html"><img src="../midia/icon.png" alt="Logo"></a>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Busque no BoomBum...">
+        <img src="../midia/header/Icon-Search.png" alt="Buscar">
+      </div>
+      <div class="actions">
+        <div class="icon">
+          <img src="../midia/header/user.png" alt="Usuário">
+          <div id="user-info" style="display:flex; flex-direction:column; font-size:13px; align-items:flex-start; color:white;">
+            <div id="user-actions">
+              <a href="login.html" id="login-link" style="text-decoration:underline; color:white; margin-right:5px;">Entre</a>
+              <span style="margin-right:5px;">ou</span><br>
+              <a href="cadastro.html" id="signup-link" style="text-decoration:underline; color:white;">Cadastre-se</a>
+            </div>
+          </div>
+        </div>
+        <div class="icon"><img src="../midia/header/sac.png" alt="SAC"></div>
+        <div class="icon"><img src="../midia/header/carshopping.png" alt="Carrinho"></div>
+      </div>
+    </div>
+
+    <div class="categories">
+      <div class="dropdown">
+        <button class="dropbtn">Departamento &#9662;</button>
+        <div class="dropdown-content">
+          <a href="#">Hardware</a>
+          <a href="#">PC Gamer</a>
+          <a href="#">Periféricos</a>
+          <a href="#">Smartphones</a>
+          <a href="#">Monitores</a>
+          <a href="#">Cadeiras Gamer</a>
+          <a href="#">Notebooks</a>
+        </div>
+      </div>
+      <a href="ofertaspage.html">Ofertas</a>
+      <a href="hardwarepage.html">Hardware</a>
+      <a href="Pcgamerpage.html">PC Gamer</a>
+      <a href="perifericopage.html">Periféricos</a>
+    </div>
+  </header>
+
+  <div class="carousel-container">
+    <div class="carousel-slides">
+      <img src="../midia/carrosel/blackninja.png" alt="Slide 1" data-bg="#000C15">
+      <img src="../midia/carrosel/fifaclub.png" alt="Slide 2" data-bg="#000000">
+      <img src="../midia/carrosel/35.png" alt="Slide 3" data-bg="#020C2D">
+      <img src="../midia/carrosel/PlacadeVideos.png" alt="Slide 4" data-bg="#05e28c">
+      <img src="../midia/carrosel/700off.png" alt="Slide 5" data-bg="#c8f221">
+      <img src="../midia/carrosel/iphon.png" alt="Slide 6" data-bg="#000000">
+      <img src="../midia/carrosel/PlacadeVideos.png" alt="Slide 7" data-bg="#05e28c">
+    </div>
+    <button class="carousel-btn prev">&#10094;</button>
+    <button class="carousel-btn next">&#10095;</button>
+  </div>
+  <div class="orange-bar">BLACK NINJA</div>
+  <div class="product-column">
+   <main class="main-content">
+        <section class="product-scroller-section">
+            <div class="scroller-header">
+                <h2 class="category-title">Produtos em Destaque</h2>
+                <div class="scroller-nav">
+                    <button id="scroll-prev-btn" class="carousel-product-btn prev">&#10094;</button>
+                    <button id="scroll-next-btn" class="carousel-product-btn next">&#10095;</button>
+                </div>
+            </div>
+            <div class="product-scroller" id="product-grid">
+                </div>
+        </section>
+    </main>
+  </div>
+
+  <footer>
+    <div class="footer-container">
+      <div>
+        <h3>Atendimento</h3>
+        <p>08:00 às 20:00 - Segunda a Sexta;</p>
+        <p>09:00 às 15:00 - Sábado, horário de Brasília (exceto Domingo e feriados).</p>
+      </div>
+      <div>
+        <h3>Fale conosco</h3>
+        <p><strong>Vendas Pessoa Jurídica</strong></p>
+        <p>08:00 às 20:00 - Segunda a Sexta;</p>
+        <p>09:00 às 15:00 - Sábado, horário de Brasília (exceto Domingo e feriados).</p>
+        <p>Via chat ou pelo email: <a href="mailto:vendas@kabum.com.br" style="color:#FFCC00;">vendas@kabum.com.br</a></p>
+      </div>
+      <div>
+        <h3>Loja Física</h3>
+        <p>08:00 às 20:00 - Segunda à Sábado, horário de Brasília (exceto Domingo e feriados)</p>
+        <p>Loja 1: Rua Amazonas da Silva, 27 - Vila Guilherme</p>
+      </div>
+    </div>
+    <div class="social-section" style="text-align:center; margin-top:30px;">
+      <div class="social-icons" style="margin:10px 0; display:flex; justify-content:center; gap:15px;">
+        <h3>Mídias Sociais:</h3>
+        <a href="#"><img src="../midia/footer/instagram.png" alt="Instagram"></a>
+        <a href="#"><img src="../midia/footer/whatsapp.png" alt="Whatsapp"></a>
+        <a href="#"><img src="../midia/footer/tiktok.png" alt="Tiktok"></a>
+        <a href="#"><img src="../midia/footer/linkedin.png" alt="Linkedin"></a>
+      </div>
+      <div>
+        <img src="../midia/icon.png" alt="Logo BoomBum" class="logo-footer">
+        <p>© 2025 BoomBum. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+
+  <script>
+    const slides = document.querySelector('.carousel-slides');
+    const images = document.querySelectorAll('.carousel-slides img');
+    const prevBtn = document.querySelector('.carousel-btn.prev');
+    const nextBtn = document.querySelector('.carousel-btn.next');
+    const totalSlides = images.length;
+
+    let index = 1;
+    let isTransitioning = false;
+
+    const firstClone = images[0].cloneNode(true);
+    const lastClone = images[totalSlides - 1].cloneNode(true);
+    slides.appendChild(firstClone);
+    slides.insertBefore(lastClone, slides.firstChild);
+
+    const allSlides = document.querySelectorAll('.carousel-slides img');
+    slides.style.transform = `translateX(-${index * 100}%)`;
+    document.body.style.background = images[index - 1].dataset.bg;
+
+    function changeBackground(i) {
+      const realIndex = (i - 1 + totalSlides) % totalSlides;
+      document.body.style.background = images[realIndex].dataset.bg;
+    }
+
+    function moveToSlide(i) {
+      if (isTransitioning) return;
+      isTransitioning = true;
+      index = i;
+      slides.style.transition = "transform 0.5s ease-in-out";
+      slides.style.transform = `translateX(-${index * 100}%)`;
+      changeBackground(index);
+    }
+
+    slides.addEventListener('transitionend', () => {
+      if (allSlides[index] === firstClone) {
+        slides.style.transition = "none";
+        index = 1;
+        slides.style.transform = `translateX(-${index * 100}%)`;
+      } else if (allSlides[index] === lastClone) {
+        slides.style.transition = "none";
+        index = totalSlides;
+        slides.style.transform = `translateX(-${index * 100}%)`;
+      }
+      isTransitioning = false;
+    });
+
+    prevBtn.addEventListener('click', () => moveToSlide(index - 1));
+    nextBtn.addEventListener('click', () => moveToSlide(index + 1));
+    setInterval(() => moveToSlide(index + 1), 5000);
+
+    const header = document.getElementById("mainHeader");
+    function checkScroll() {
+      if (window.scrollY <= 20) header.classList.add("expanded");
+      else header.classList.remove("expanded");
+    }
+    window.addEventListener("scroll", checkScroll);
+    checkScroll();
+  </script>
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="/codification/script/conta.js"></script>
+  
+</body>
+</html>

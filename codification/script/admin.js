@@ -47,19 +47,19 @@ auth.onAuthStateChanged(user => {
             } else {
                 // Se não for admin, nega o acesso e redireciona.
                 alert("Acesso negado. Você não é um administrador.");
-                window.location.href = "/paginas/login.html";
+                window.location.href = "login.html";
             }
         });
     } else {
         // Se não houver usuário logado, redireciona para o login.
-        window.location.href = "/paginas/login.html";
+        window.location.href = "login.html";
     }
 });
 
 // Adiciona a funcionalidade de logout ao botão "Sair".
 if (adminLogoutBtn) {
     adminLogoutBtn.addEventListener('click', () => {
-        auth.signOut().then(() => window.location.href = "/paginas/login.html");
+        auth.signOut().then(() => window.location.href = "login.html");
     });
 }
 
