@@ -1,8 +1,8 @@
 // ==========================================================
 // IMPORTS DO FIREBASE (versão modular)
-const { initializeApp } = require("firebase/app");
-const { getAuth, signInWithEmailAndPassword, onAuthStateChanged } = require("firebase/auth");
-const { getFirestore, doc, getDoc } = require("firebase/firestore");
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 // ==========================================================
 // CONFIGURAÇÃO E INICIALIZAÇÃO DO FIREBASE
 // ==========================================================
@@ -20,18 +20,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ==========================================================
-// SELEÇÃO DE ELEMENTOS DO HTML
-// ==========================================================
+
 const loginForm = document.getElementById("login-form");
 const emailInput = document.getElementById("login-email");
 const passwordInput = document.getElementById("login-password");
 const messageBox = document.getElementById("message");
 const loading = document.getElementById("loading");
 
-// ==========================================================
-// FUNÇÕES AUXILIARES
-// ==========================================================
+
 function showMessage(text, type = "error") {
     messageBox.style.display = "block";
     messageBox.className = "message " + type;
@@ -62,9 +58,7 @@ function validateInputs(email, password) {
     return null;
 }
 
-// ==========================================================
-// LÓGICA PRINCIPAL DE LOGIN E REDIRECIONAMENTO
-// ==========================================================
+
 async function checkAdminRoleAndRedirect(user) {
     try {
         const userRef = doc(db, 'users', user.uid);
@@ -86,9 +80,7 @@ async function checkAdminRoleAndRedirect(user) {
     }
 }
 
-// ==========================================================
-// EVENT LISTENERS
-// ==========================================================
+
 if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();

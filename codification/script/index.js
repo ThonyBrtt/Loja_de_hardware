@@ -1,8 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ================================
-    // CARROSSEL DE IMAGENS (TOPO)
-    // ================================
     const imageSlides = document.querySelector('.carousel-slides');
     const images = document.querySelectorAll('.carousel-slides img');
     const prevImgBtn = document.querySelector('.carousel-container .prev');
@@ -15,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const offset = -currentIndex * 100;
         imageSlides.style.transform = `translateX(${offset}%)`;
 
-        // Muda a cor de fundo do site com base no slide
         const currentImage = images[currentIndex];
         const bgColor = currentImage.getAttribute('data-bg');
         if (bgColor) {
@@ -34,23 +30,20 @@ document.addEventListener('DOMContentLoaded', () => {
             updateCarousel();
         });
 
-        // Troca automática de slides a cada 5 segundos
         setInterval(() => {
             nextImgBtn.click();
         }, 5000);
 
-        updateCarousel(); // Define o estado inicial
+        updateCarousel(); 
     }
 
 
-    // ================================
-    // CARROSSEL DE PRODUTOS EM DESTAQUE
-    // ================================
+
     const productGrid = document.getElementById('product-grid');
     const prevProductBtn = document.getElementById('scroll-prev-btn');
     const nextProductBtn = document.getElementById('scroll-next-btn');
     
-    // --- Configuração do Firebase ---
+ 
     const firebaseConfig = {
       apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
       authDomain: "boombum-eaf32.firebaseapp.com",
@@ -61,18 +54,18 @@ document.addEventListener('DOMContentLoaded', () => {
       measurementId: "G-D7CBRK53E0"
     };
 
-    // Inicializa o Firebase (apenas se ainda não foi inicializado)
+
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
     const db = firebase.firestore();
 
-    // --- Função para buscar produtos em destaque ---
+
     function fetchFeaturedProducts() {
-        // Busca produtos onde o campo 'isOnOffer' é 'true'
+
         db.collection('products')
           .orderBy('createdAt', 'desc')
-          .limit(10) // Limita a 10 produtos para o carrossel
+          .limit(10) 
           .get()
           .then(snapshot => {
               renderProducts(snapshot.docs);
@@ -83,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
           });
     }
 
-    // --- Função para renderizar os cards de produtos ---
+  
     function renderProducts(docs) {
       if (!docs.length) {
         productGrid.innerHTML = '<p>Nenhum produto em destaque no momento.</p>';
@@ -116,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
       addButtonEvents();
     }
     
-    // --- Funções dos botões e navegação ---
+  
     function addButtonEvents() {
         document.querySelectorAll('.btn-buy').forEach(btn => {
             btn.addEventListener('click', e => comprarProduto(e.target.dataset.id));
@@ -140,12 +133,11 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`Produto ${produtoId} adicionado ao carrinho.`);
     }
 
-    // --- Lógica de rolagem do carrossel de produtos ---
     nextProductBtn.addEventListener('click', () => {
         const card = productGrid.querySelector('.product-card');
         if (!card) return;
         const cardWidth = card.offsetWidth;
-        const gap = 25; // O mesmo valor do 'gap' no CSS
+        const gap = 25; 
         productGrid.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
     });
 
@@ -157,6 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
         productGrid.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
     });
 
-    // --- Iniciar busca dos produtos ao carregar a página ---
+   
     fetchFeaturedProducts();
 });
