@@ -1,11 +1,8 @@
-// ==========================================================
-// IMPORTS DO FIREBASE (versão modular)
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-// ==========================================================
-// CONFIGURAÇÃO E INICIALIZAÇÃO DO FIREBASE
-// ==========================================================
+
 const firebaseConfig = {
     apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
     authDomain: "boombum-eaf32.firebaseapp.com",

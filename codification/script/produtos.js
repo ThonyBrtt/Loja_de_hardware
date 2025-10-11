@@ -1,6 +1,4 @@
-// ================================
-// 🔥 CONFIGURAÇÃO FIREBASE
-// ================================
+
 const firebaseConfig = {
   apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
   authDomain: "boombum-eaf32.firebaseapp.com",
@@ -14,16 +12,12 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ================================
-// 📦 VARIÁVEIS GERAIS
-// ================================
+
 const productGrid = document.getElementById('product-grid');
-const pageIdentifier = document.body.dataset.category; 
+const pageIdentifier = document.body.dataset.category;
 let currentQuery = null;
 
-// ================================
-// 🧩 FUNÇÃO PARA RENDERIZAR PRODUTOS (com carrossel manual)
-// ================================
+
 function renderProducts(docs) {
   if (!docs.length) {
     productGrid.innerHTML = '<p class="empty-category-message">Nenhum produto encontrado nesta categoria.</p>';
@@ -40,7 +34,7 @@ function renderProducts(docs) {
       product.imageUrl1,
       product.imageUrl2,
       product.imageUrl3
-    ].filter(Boolean); 
+    ].filter(Boolean);
 
     const formattedPrice = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     const installmentPrice = (product.price / 12).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -114,7 +108,11 @@ function addButtonEvents() {
   document.querySelectorAll('.btn-add-cart').forEach(btn => {
     btn.addEventListener('click', e => {
       const id = e.target.dataset.id;
-      adicionarAoCarrinho(id);
+      if (typeof addToCart === "function") {
+        addToCart(id); 
+      } else {
+        alert("Carrinho indisponível no momento. Tente novamente.");
+      }
     });
   });
 }
@@ -136,7 +134,7 @@ if (!pageIdentifier) {
   } else {
     query = query.where('category', '==', pageIdentifier);
   }
-  
+
   query.orderBy('createdAt', 'desc').onSnapshot(snapshot => {
     renderProducts(snapshot.docs);
   }, error => {
@@ -159,7 +157,7 @@ function aplicarFiltro(tipoFiltro) {
     query = query.where('category', '==', pageIdentifier);
   }
 
-  if (currentQuery) currentQuery(); 
+  if (currentQuery) currentQuery();
 
   currentQuery = query.onSnapshot(snapshot => {
     let produtos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -199,7 +197,7 @@ function finalizarCompra() {
 
   const produtoRef = db.collection('products').doc(produtoId);
 
-  produtoRef.get().then(doc => {  
+  produtoRef.get().then(doc => {
     if (!doc.exists) return alert("Produto não encontrado.");
     const estoqueAtual = doc.data().stock || 0;
 

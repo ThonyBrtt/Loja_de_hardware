@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/png" href="midia/favicon.png">
+  <link rel="icon" type="image/png" href="../midia/favicon.ico">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boombum | Oferta Gamer!</title>
   <link rel="stylesheet" href="../css/index.css">
@@ -23,9 +24,11 @@
       <div class="actions">
         <div class="icon">
           <img src="../midia/header/user.png" alt="Usuário">
-          <div id="user-info" style="display:flex; flex-direction:column; font-size:13px; align-items:flex-start; color:white;">
+          <div id="user-info"
+            style="display:flex; flex-direction:column; font-size:13px; align-items:flex-start; color:white;">
             <div id="user-actions">
-              <a href="login.html" id="login-link" style="text-decoration:underline; color:white; margin-right:5px;">Entre</a>
+              <a href="login.html" id="login-link"
+                style="text-decoration:underline; color:white; margin-right:5px;">Entre</a>
               <span style="margin-right:5px;">ou</span><br>
               <a href="cadastro.html" id="signup-link" style="text-decoration:underline; color:white;">Cadastre-se</a>
             </div>
@@ -40,13 +43,10 @@
       <div class="dropdown">
         <button class="dropbtn">Departamento &#9662;</button>
         <div class="dropdown-content">
-          <a href="#">Hardware</a>
-          <a href="#">PC Gamer</a>
-          <a href="#">Periféricos</a>
-          <a href="#">Smartphones</a>
-          <a href="#">Monitores</a>
-          <a href="#">Cadeiras Gamer</a>
-          <a href="#">Notebooks</a>
+          <a href="ofertaspage.html">Ofertas</a>
+          <a href="hardwarepage.html">Hardware</a>
+          <a href="Pcgamerpage.html">PC Gamer</a>
+          <a href="perifericopage.html">Periféricos</a>
         </div>
       </div>
       <a href="ofertaspage.html">Ofertas</a>
@@ -61,28 +61,27 @@
       <img src="../midia/carrosel/blackninja.png" alt="Slide 1" data-bg="#000C15">
       <img src="../midia/carrosel/fifaclub.png" alt="Slide 2" data-bg="#000000">
       <img src="../midia/carrosel/35.png" alt="Slide 3" data-bg="#020C2D">
-      <img src="../midia/carrosel/PlacadeVideos.png" alt="Slide 4" data-bg="#05e28c">
-      <img src="../midia/carrosel/700off.png" alt="Slide 5" data-bg="#c8f221">
-      <img src="../midia/carrosel/iphon.png" alt="Slide 6" data-bg="#000000">
-      <img src="../midia/carrosel/PlacadeVideos.png" alt="Slide 7" data-bg="#05e28c">
+      <img src="../midia/carrosel/700off.png" alt="Slide 4" data-bg="#c8f221">
+      <img src="../midia/carrosel/iphon.png" alt="Slide 5" data-bg="#000000">
+      <img src="../midia/carrosel/PlacadeVideos.png" alt="Slide 6" data-bg="#05e28c">
     </div>
     <button class="carousel-btn prev">&#10094;</button>
     <button class="carousel-btn next">&#10095;</button>
   </div>
   <div class="orange-bar">BLACK NINJA</div>
   <div class="product-column">
-   <main class="main-content">
-        <section class="product-scroller-section">
-            <div class="scroller-header">
-                <h2 class="category-title">Produtos em Destaque</h2>
-                <div class="scroller-nav">
-                    <button id="scroll-prev-btn" class="carousel-product-btn prev">&#10094;</button>
-                    <button id="scroll-next-btn" class="carousel-product-btn next">&#10095;</button>
-                </div>
-            </div>
-            <div class="product-scroller" id="product-grid">
-                </div>
-        </section>
+    <main class="main-content">
+      <section class="product-scroller-section">
+        <div class="scroller-header">
+          <h2 class="category-title">Produtos em Destaque</h2>
+          <div class="scroller-nav">
+            <button id="scroll-prev-btn" class="carousel-product-btn prev">&#10094;</button>
+            <button id="scroll-next-btn" class="carousel-product-btn next">&#10095;</button>
+          </div>
+        </div>
+        <div class="product-scroller" id="product-grid">
+        </div>
+      </section>
     </main>
   </div>
 
@@ -98,7 +97,8 @@
         <p><strong>Vendas Pessoa Jurídica</strong></p>
         <p>08:00 às 20:00 - Segunda a Sexta;</p>
         <p>09:00 às 15:00 - Sábado, horário de Brasília (exceto Domingo e feriados).</p>
-        <p>Via chat ou pelo email: <a href="mailto:vendas@kabum.com.br" style="color:#FFCC00;">vendas@kabum.com.br</a></p>
+        <p>Via chat ou pelo email: <a href="mailto:vendas@kabum.com.br" style="color:#FFCC00;">vendas@kabum.com.br</a>
+        </p>
       </div>
       <div>
         <h3>Loja Física</h3>
@@ -184,7 +184,16 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="../codification/script/sidebar.js"></script>
   <script src="/codification/script/conta.js"></script>
-  
+  <script src="../codification/script/produtos.js"></script>
+  <script src="../codification/script/index.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      inicializarPaginaDeProdutos();
+    });
+  </script>
 </body>
+
+
 </html>

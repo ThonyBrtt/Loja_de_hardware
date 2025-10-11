@@ -1,6 +1,4 @@
-// ==========================================================
-// CONFIGURAÇÃO E INICIALIZAÇÃO DO FIREBASE
-// ==========================================================
+
 const firebaseConfig = {
     apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
     authDomain: "boombum-eaf32.firebaseapp.com",
@@ -14,9 +12,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// ==========================================================
-// LÓGICA DA PÁGINA DE RECUPERAÇÃO DE SENHA
-// ==========================================================
 
 
 document.addEventListener('DOMContentLoaded', function() {
