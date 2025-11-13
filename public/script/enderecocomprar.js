@@ -1,12 +1,12 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
-  authDomain: "boombum-eaf32.firebaseapp.com",
-  projectId: "boombum-eaf32",
-  storageBucket: "boombum-eaf32.firebasestorage.app",
-  messagingSenderId: "827065363375",
-  appId: "1:827065363375:web:913f128e651fcdbe145d5a",
-  measurementId: "G-D7CBRK53E0",
-};
+      apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
+      authDomain: "boombum-eaf32.firebaseapp.com",
+      projectId: "boombum-eaf32",
+      storageBucket: "boombum-eaf32.firebasestorage.app",
+      messagingSenderId: "827065363375",
+      appId: "1:827065363375:web:913f128e651fcdbe145d5a",
+      measurementId: "G-D7CBRK53E0"
+    };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
