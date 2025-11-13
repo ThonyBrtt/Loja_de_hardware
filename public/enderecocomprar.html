@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <link rel="icon" type="image/png" href="./midia/favicon.ico">
   <title>Selecionar Endereço | BoomBum</title>
+
+  <!-- CSS -->
   <link rel="stylesheet" href="./css/compras.css"> 
-  <script src="./script/enderecocomprar.js"></script>
   <link rel="stylesheet" href="./css/carrinhocomprar.css">
   <link rel="stylesheet" href="./css/enderecoComprar.css">
 </head>
-<body class="page-comprar">
 
+<body class="page-comprar">
   <header id="mainHeader">
     <div class="topbar">
       <div class="logo">
@@ -29,47 +30,55 @@
   </header>
 
   <main id="detalhesProduto">
-  <div class="checkout-container" style="display:flex; gap:20px; align-items:flex-start;">
-    
+    <div class="checkout-container" style="display:flex; gap:20px; align-items:flex-start;">
 
-    <div class="endereco-container" style="flex:2;">
-      <h2>Selecione seu endereço:</h2>
+      <div class="endereco-container" style="flex:2;">
+        <h2>Selecione seu endereço:</h2>
 
-      <div id="lista-enderecos" class="lista-enderecos">
-        <p>Carregando seus endereços...</p>
+        <div id="lista-enderecos" class="lista-enderecos">
+          <p>Carregando seus endereços...</p>
+        </div>
+
+        <div class="acoes-endereco">
+          <a id="btn-novo-endereco" class="btn-link">Cadastrar novo endereço</a>
+        </div>
+
+        <div class="finalizar">
+          <button id="btn-confirmar" class="btn-confirmar" disabled>Confirmar Endereço</button>
+        </div>
       </div>
 
-      <div class="acoes-endereco">
-        <a id="btn-novo-endereco" class="btn-link">Cadastrar novo endereço</a>
-      </div>
-
-      <div class="finalizar">
-        <button id="btn-confirmar" class="btn-confirmar" disabled>Confirmar Endereço</button>
+      <div id="resumo-pedido" style="flex:1; border:1px solid #ccc; padding:16px; border-radius:8px;">
+        <h3>Resumo do Pedido</h3>
+        <p><strong>Valor do produto: R$ <span id="valor-produto">0.00</span></strong></p>
+        <p><strong>Frete: R$ <span id="valor-frete">0.00</span></strong></p>
+        <hr>
+        <p><strong>Total a prazo: R$ <span id="total-prazo">0.00</span></strong></p>
       </div>
     </div>
+  </main>
 
-    <div id="resumo-pedido" style="flex:1; border:1px solid #ccc; padding:16px; border-radius:8px;">
-  <h3>Resumo do Pedido</h3>
-
-  <p><strong>Valor do produto: R$ <span id="valor-produto">0.00</span></strong></p>
-  <p><strong>Frete: R$ <span id="valor-frete">0.00</span></strong></p>
-  <hr>
-  <p><strong>Total a prazo: R$ <span id="total-prazo">0.00</span></strong></p>
-</div>
-
-
-
-  </div>
-</main>
-
-
-  
+  <!-- ✅ Firebase SDKs (v8) -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-  <script type="module" src="./script/enderecoComprar.js"></script>
-   <script src="./script/sidebar.js" defer></script>
-  <script src="./script/index.js"></script>
+  <!-- ✅ Inicialização do Firebase (somente uma vez) -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
+      authDomain: "boombum-eaf32.firebaseapp.com",
+      projectId: "boombum-eaf32",
+      storageBucket: "boombum-eaf32.firebasestorage.app",
+      messagingSenderId: "827065363375",
+      appId: "1:827065363375:web:913f128e651fcdbe145d5a",
+      measurementId: "G-D7CBRK53E0"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <script src="./script/enderecocomprar.js" defer></script>
+  <script src="./script/sidebar.js" defer></script>
+  <script src="./script/index.js" defer></script>
 </body>
 </html>
