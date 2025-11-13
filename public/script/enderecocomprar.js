@@ -1,25 +1,29 @@
-const firebaseConfig = {
+document.addEventListener("DOMContentLoaded", () => {
+
+  // 🔥 --- FIREBASE (usa o mesmo já inicializado no sidebar.js) ---
+  if (!firebase.apps.length) {
+    const firebaseConfig = {
       apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
       authDomain: "boombum-eaf32.firebaseapp.com",
       projectId: "boombum-eaf32",
-      storageBucket: "boombum-eaf32.firebasestorage.app",
+      storageBucket: "boombum-eaf32.appspot.com",
       messagingSenderId: "827065363375",
       appId: "1:827065363375:web:913f128e651fcdbe145d5a",
       measurementId: "G-D7CBRK53E0"
     };
+    firebase.initializeApp(firebaseConfig);
+  }
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
+  const db = firebase.firestore();
+  const auth = firebase.auth();
 
-document.addEventListener("DOMContentLoaded", () => {
-
+  // 🧾 --- ELEMENTOS ---
   const listaEnderecos = document.getElementById("lista-enderecos");
   const btnNovo = document.getElementById("btn-novo-endereco");
   const btnConfirmar = document.getElementById("btn-confirmar");
   const totalPedidoSpan = document.getElementById("total-pedido");
 
-
+  // 👤 --- VERIFICA LOGIN ---
   auth.onAuthStateChanged(async (user) => {
     if (!user) {
       listaEnderecos.innerHTML = "<p>Faça login para ver seus endereços.</p>";
@@ -30,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await carregarResumoPedido(user.uid);
   });
 
+  // 📍 --- CARREGAR ENDEREÇOS ---
   async function carregarEnderecos(uid) {
     try {
       const ref = db.collection("users").doc(uid).collection("addresses");
@@ -70,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-
+  // 💰 --- CARREGAR RESUMO DO PEDIDO ---
   async function carregarResumoPedido(uid) {
     try {
       const userDoc = await db.collection("users").doc(uid).get();
@@ -85,13 +90,18 @@ document.addEventListener("DOMContentLoaded", () => {
         total += produto.price * item.quantidade;
       }
 
-      if (totalPedidoSpan) totalPedidoSpan.textContent = total.toLocaleString("pt-BR");
+      if (totalPedidoSpan)
+        totalPedidoSpan.textContent = total.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
     } catch (error) {
       console.error("Erro ao carregar resumo do pedido:", error);
       if (totalPedidoSpan) totalPedidoSpan.textContent = "0.00";
     }
   }
 
+  // 🟢 --- CONFIRMAR E IR PARA PAGAMENTO ---
   btnConfirmar.addEventListener("click", async () => {
     const selecionado = document.querySelector('input[name="endereco"]:checked');
     if (!selecionado) return alert("Selecione um endereço antes de continuar.");
@@ -117,29 +127,28 @@ document.addEventListener("DOMContentLoaded", () => {
         items.push({
           title: produto.name,
           quantity: item.quantidade,
-          unit_price: produto.price
+          unit_price: produto.price,
         });
       }
 
-
-      const response = await fetch("http://localhost:8080/create-preference", {
+      // ✅ CHAMA API HOSPEDADA NA VERCEL
+      const response = await fetch("/api/create-preference", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items })
+        body: JSON.stringify({ items }),
       });
 
       const data = await response.json();
+
       if (data.preference_url) {
         window.location.href = data.preference_url;
       } else {
-        console.error(data);
+        console.error("Erro ao criar preferência:", data);
         alert("Erro ao gerar link de pagamento.");
       }
-
     } catch (error) {
       console.error("Erro ao processar pagamento:", error);
       alert("Erro ao processar pagamento. Tente novamente.");
     }
   });
-
 });

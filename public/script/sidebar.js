@@ -1,4 +1,3 @@
-
 (function loadSidebarCSS() {
   const existing = document.querySelector('link[href="../css/sidebar.css"]');
   if (!existing) {
@@ -8,7 +7,6 @@
     document.head.appendChild(link);
   }
 })();
-
 
 document.addEventListener("DOMContentLoaded", () => {
   const sidebarContainer = document.createElement("div");
@@ -40,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const cartIcon = document.querySelector('.actions .icon img[alt="Carrinho"]');
   const finalizarBtn = sidebarContainer.querySelector("#finalizar-compra");
 
-
   if (cartIcon) {
     cartIcon.style.cursor = "pointer";
     cartIcon.addEventListener("click", () => {
@@ -50,37 +47,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-
   closeBtn.addEventListener("click", () => {
     sidebar.classList.remove("open");
     backdrop.classList.remove("visible");
   });
+
   backdrop.addEventListener("click", () => {
     sidebar.classList.remove("open");
     backdrop.classList.remove("visible");
   });
-
 
   finalizarBtn.addEventListener("click", () => {
     window.location.href = "carrinhocomprar.html";
   });
 });
 
-
-const firebaseConfig = {
-  apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
-  authDomain: "boombum-eaf32.firebaseapp.com",
-  projectId: "boombum-eaf32",
-  storageBucket: "boombum-eaf32.firebasestorage.app",
-  messagingSenderId: "827065363375",
-  appId: "1:827065363375:web:913f128e651fcdbe145d5a",
-  measurementId: "G-D7CBRK53E0"
-};
-
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+// 🧠 Usa o Firebase já inicializado em outro arquivo (não declara firebaseConfig aqui!)
 const db = firebase.firestore();
 const auth = firebase.auth();
-
 
 window.adicionarAoCarrinho = async function (produtoId) {
   const user = auth.currentUser;
@@ -109,7 +93,6 @@ window.adicionarAoCarrinho = async function (produtoId) {
   }
 };
 
-
 window.aumentarQuantidade = async function (produtoId) {
   const user = auth.currentUser;
   if (!user) return;
@@ -125,8 +108,6 @@ window.aumentarQuantidade = async function (produtoId) {
     carregarCarrinho();
   }
 };
-
-
 
 window.diminuirQuantidade = async function (produtoId) {
   const user = auth.currentUser;
@@ -147,7 +128,6 @@ window.diminuirQuantidade = async function (produtoId) {
   }
 };
 
-
 window.removerDoCarrinho = async function (produtoId) {
   const user = auth.currentUser;
   if (!user) return;
@@ -160,7 +140,6 @@ window.removerDoCarrinho = async function (produtoId) {
   await userRef.set({ cart }, { merge: true });
   carregarCarrinho();
 };
-
 
 async function carregarCarrinho() {
   const user = auth.currentUser;
