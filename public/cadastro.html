@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="../midia/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOOMBUM - Criar Conta</title>
+    <link rel="stylesheet" href="../css/cadastro.css">
+    
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <div class="logo-cadastro">
+                <a href="index.html"><img src="../midia/icon.png" alt="Logo"></a>
+            </div>
+        </div>
+        <main>
+            <div class="card">
+                <h2>CRIAR CONTA</h2>
+
+                <div id="loading" style="display:none;">Criando conta...</div>
+                <div id="message" class="message" style="display:none;"></div>
+
+                <form id="register-form">
+                    <div class="form-group">
+                        <input type="text" id="full-name" placeholder="Nome completo*" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" placeholder="E-mail*" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" placeholder="Crie sua senha*" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="confirm-password" placeholder="Confirme sua senha*" required>
+                    </div>
+
+                    <label>
+                        <input type="checkbox" required>
+                        Eu aceito os Termos de uso e Política de privacidade
+                    </label>
+
+                    <button type="submit" class="btn-primary">CRIAR CONTA</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="../codification/script/cadastro.js"></script>
+</body>
+</html>

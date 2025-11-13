@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="../midia/favicon.ico">
+  <title>Selecionar Endereço | BoomBum</title>
+  <link rel="stylesheet" href="../css/compras.css"> 
+  <script src="enderecoComprar.js"></script>
+  <link rel="stylesheet" href="../css/carrinhocomprar.css">
+  <link rel="stylesheet" href="../css/enderecoComprar.css">
+</head>
+<body class="page-comprar">
+
+  <header id="mainHeader">
+    <div class="topbar">
+      <div class="logo">
+        <a href="index.html"><img src="../midia/icon.png" alt="Logo"></a>
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Busque no BoomBum...">
+        <img src="../midia/header/Icon-Search.png" alt="Buscar">
+      </div>
+      <div class="actions">
+        <div class="icon"><img src="../midia/header/user.png" alt="Usuário"></div>
+        <div class="icon"><img src="../midia/header/sac.png" alt="SAC"></div>
+        <div class="icon"><img src="../midia/header/carshopping.png" alt="Carrinho"></div>
+      </div>
+    </div>
+  </header>
+
+  <main id="detalhesProduto">
+  <div class="checkout-container" style="display:flex; gap:20px; align-items:flex-start;">
+    
+
+    <div class="endereco-container" style="flex:2;">
+      <h2>Selecione seu endereço:</h2>
+
+      <div id="lista-enderecos" class="lista-enderecos">
+        <p>Carregando seus endereços...</p>
+      </div>
+
+      <div class="acoes-endereco">
+        <a id="btn-novo-endereco" class="btn-link">Cadastrar novo endereço</a>
+      </div>
+
+      <div class="finalizar">
+        <button id="btn-confirmar" class="btn-confirmar" disabled>Confirmar Endereço</button>
+      </div>
+    </div>
+
+    <div id="resumo-pedido" style="flex:1; border:1px solid #ccc; padding:16px; border-radius:8px;">
+  <h3>Resumo do Pedido</h3>
+
+  <p><strong>Valor do produto: R$ <span id="valor-produto">0.00</span></strong></p>
+  <p><strong>Frete: R$ <span id="valor-frete">0.00</span></strong></p>
+  <hr>
+  <p><strong>Total a prazo: R$ <span id="total-prazo">0.00</span></strong></p>
+</div>
+
+
+
+  </div>
+</main>
+
+
+  
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+
+  <script type="module" src="../codification/script/enderecoComprar.js"></script>
+   <script src="../codification/script/sidebar.js" defer></script>
+  <script src="../codification/script/index.js"></script>
+</body>
+</html>
