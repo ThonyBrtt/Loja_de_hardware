@@ -5,6 +5,17 @@ const client = new MercadoPagoConfig({
 });
 
 export default async function handler(req, res) {
+  // --- CONFIGURAÇÃO DE CORS ---
+  res.setHeader("Access-Control-Allow-Origin", "https://loja-de-hardware-joaolucasnormandias-projects.vercel.app");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // --- Responde o preflight (OPTIONS) ---
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
+  // --- Apenas POST ---
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Método não permitido" });
   }
