@@ -51,5 +51,4 @@ app.post("/create-preference", async (req, res) => {
   }
 });
 
-// ✅ exporta o app em vez de rodar o servidor
 export default app;
