@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  // --- CARROSSEL DE IMAGENS ---
+  // --- 🖼️ CARROSSEL DE IMAGENS ---
   const imageSlides = document.querySelector('.carousel-slides');
   const images = document.querySelectorAll('.carousel-slides img');
   const prevImgBtn = document.querySelector('.carousel-container .prev');
@@ -11,14 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function updateCarousel() {
     const offset = -currentIndex * 100;
-    imageSlides.style.transform = `translateX(${offset}%)`;
+    if (imageSlides) imageSlides.style.transform = `translateX(${offset}%)`;
 
     const currentImage = images[currentIndex];
-    const bgColor = currentImage.getAttribute('data-bg');
+    const bgColor = currentImage?.getAttribute('data-bg');
     if (bgColor) document.body.style.backgroundColor = bgColor;
   }
 
-  if (imageSlides && images.length > 0) {
+  if (imageSlides && totalImages > 0 && nextImgBtn && prevImgBtn) {
     nextImgBtn.addEventListener('click', () => {
       currentIndex = (currentIndex + 1) % totalImages;
       updateCarousel();
@@ -33,15 +33,15 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCarousel();
   }
 
-  // --- FIREBASE (usa instância do sidebar.js) ---
-  if (!firebase.apps.length) {
-    console.error("Firebase não inicializado! Verifique se sidebar.js é carregado antes deste arquivo.");
+  // --- 🔥 FIREBASE ---
+  if (typeof firebase === "undefined" || !firebase.apps.length) {
+    console.error("⚠️ Firebase não foi inicializado! Verifique se o arquivo sidebar.js é carregado antes deste.");
     return;
   }
 
   const db = firebase.firestore();
 
-  // --- PRODUTOS EM DESTAQUE ---
+  // --- 🛍️ PRODUTOS EM DESTAQUE ---
   const productGrid = document.getElementById('product-grid');
   const prevProductBtn = document.getElementById('scroll-prev-btn');
   const nextProductBtn = document.getElementById('scroll-next-btn');
@@ -54,11 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(snapshot => renderProducts(snapshot.docs))
       .catch(error => {
         console.error("Erro ao buscar produtos em destaque:", error);
-        productGrid.innerHTML = `<p style="color:red; text-align:center;">Não foi possível carregar os produtos.</p>`;
+        if (productGrid) {
+          productGrid.innerHTML = `<p style="color:red; text-align:center;">Não foi possível carregar os produtos.</p>`;
+        }
       });
   }
 
   function renderProducts(docs) {
+    if (!productGrid) return;
+
     if (!docs.length) {
       productGrid.innerHTML = '<p>Nenhum produto em destaque no momento.</p>';
       return;
@@ -112,21 +116,23 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'comprar.html';
   }
 
-  nextProductBtn.addEventListener('click', () => {
-    const card = productGrid.querySelector('.product-card');
-    if (!card) return;
-    const cardWidth = card.offsetWidth;
-    const gap = 25;
-    productGrid.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
-  });
+  if (nextProductBtn && prevProductBtn && productGrid) {
+    nextProductBtn.addEventListener('click', () => {
+      const card = productGrid.querySelector('.product-card');
+      if (!card) return;
+      const cardWidth = card.offsetWidth;
+      const gap = 25;
+      productGrid.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+    });
 
-  prevProductBtn.addEventListener('click', () => {
-    const card = productGrid.querySelector('.product-card');
-    if (!card) return;
-    const cardWidth = card.offsetWidth;
-    const gap = 25;
-    productGrid.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
-  });
+    prevProductBtn.addEventListener('click', () => {
+      const card = productGrid.querySelector('.product-card');
+      if (!card) return;
+      const cardWidth = card.offsetWidth;
+      const gap = 25;
+      productGrid.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+    });
+  }
 
   fetchFeaturedProducts();
 });

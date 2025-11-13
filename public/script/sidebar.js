@@ -1,3 +1,4 @@
+// --- 💅 CARREGA CSS DO SIDEBAR DINAMICAMENTE ---
 (function loadSidebarCSS() {
   const existing = document.querySelector('link[href="../css/sidebar.css"]');
   if (!existing) {
@@ -8,7 +9,38 @@
   }
 })();
 
+// --- 🔥 INICIALIZAÇÃO DO FIREBASE (UMA ÚNICA VEZ) ---
+(function initializeFirebase() {
+  // Evita reinicialização se já existir
+  if (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length) {
+    console.log("Firebase já inicializado.");
+    return;
+  }
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
+    authDomain: "boombum-eaf32.firebaseapp.com",
+    projectId: "boombum-eaf32",
+    storageBucket: "boombum-eaf32.firebasestorage.app",
+    messagingSenderId: "827065363375",
+    appId: "1:827065363375:web:913f128e651fcdbe145d5a",
+    measurementId: "G-D7CBRK53E0"
+  };
+
+  try {
+    firebase.initializeApp(firebaseConfig);
+    console.log("✅ Firebase inicializado com sucesso (sidebar.js)");
+  } catch (error) {
+    console.warn("⚠️ Erro ao inicializar Firebase:", error);
+  }
+})();
+
+// --- 🧠 INSTÂNCIAS GLOBAIS ---
+const db = firebase.firestore();
+const auth = firebase.auth();
+
 document.addEventListener("DOMContentLoaded", () => {
+  // --- 🧩 CRIA E INSERE O SIDEBAR ---
   const sidebarContainer = document.createElement("div");
   sidebarContainer.id = "sidebar-root";
   sidebarContainer.innerHTML = `
@@ -38,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const cartIcon = document.querySelector('.actions .icon img[alt="Carrinho"]');
   const finalizarBtn = sidebarContainer.querySelector("#finalizar-compra");
 
+  // --- ABRIR / FECHAR SIDEBAR ---
   if (cartIcon) {
     cartIcon.style.cursor = "pointer";
     cartIcon.addEventListener("click", () => {
@@ -62,10 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// 🧠 Usa o Firebase já inicializado em outro arquivo (não declara firebaseConfig aqui!)
-const db = firebase.firestore();
-const auth = firebase.auth();
-
+// --- 🛒 FUNÇÕES GLOBAIS DO CARRINHO ---
 window.adicionarAoCarrinho = async function (produtoId) {
   const user = auth.currentUser;
   if (!user) {
