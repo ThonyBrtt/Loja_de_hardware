@@ -5,17 +5,27 @@ const client = new MercadoPagoConfig({
 });
 
 export default async function handler(req, res) {
-  // --- CONFIGURAÇÃO DE CORS ---
-  res.setHeader("Access-Control-Allow-Origin", "https://loja-de-hardware-joaolucasnormandias-projects.vercel.app");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  // --- CORS Configuração ---
+  const allowedOrigins = [
+    "https://loja-de-hardware-joaolucasnormandias-projects.vercel.app",
+    "http://localhost:8080",
+  ];
 
-  // --- Responde o preflight (OPTIONS) ---
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
+  // --- Requisição de preflight (CORS) ---
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  // --- Apenas POST ---
+  // --- Somente POST permitido ---
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Método não permitido" });
   }
@@ -37,12 +47,12 @@ export default async function handler(req, res) {
       },
     });
 
-    return res.status(200).json({
+    res.status(200).json({
       preference_id: data.id,
       preference_url: data.init_point,
     });
   } catch (error) {
     console.error("Erro ao criar preferência:", error);
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 }
