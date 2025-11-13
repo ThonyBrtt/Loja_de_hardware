@@ -26,12 +26,12 @@ export default async function handler(req, res) {
       },
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       preference_id: data.id,
       preference_url: data.init_point,
     });
   } catch (error) {
     console.error("Erro ao criar preferência:", error);
-    res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 }
