@@ -12,8 +12,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-
 </head>
 <body>
 
@@ -24,13 +22,11 @@
                 <span class="logo-text">ADMIN</span>
             </a>
             <nav class="admin-nav">
-                <a href="#" class="nav-item">Dashboard</a>
-                <a href="#" class="nav-item">Produtos</a>
-                <a href="#" class="nav-item">Pedidos</a>
-                <a href="#" class="nav-item">Clientes</a>
+                <a href="#" id="link-dashboard" class="nav-item active">Dashboard</a>
+                <a href="#" id="link-products" class="nav-item">Produtos</a>
             </nav>
             <div class="admin-actions">
-                <span id="admin-user-email" class="admin-user-info"></span>
+                <span id="admin-user-email" class="admin-user-info">Admin</span>
                 <button id="admin-logout-btn" class="btn-admin-logout">Sair</button>
             </div>
         </div>
@@ -38,66 +34,82 @@
 
     <main class="admin-main-content">
         <div class="admin-container">
-            <h1>Dashboard do Administrador</h1>
-            <p>Bem-vindo(a) ao painel de controle da BOOMBUM. Use os links de navegação para gerenciar sua loja.</p>
+            
+            <div id="view-dashboard">
+                <h2 id="form-title-display">Gerenciamento de Produtos</h2>
+                <p>Adicione novos produtos ou edite os existentes.</p>
 
-            <hr class="admin-divider">
+                <form id="product-form" class="admin-form">
+                    <input type="hidden" id="product-id"> 
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-name">Nome do Produto</label>
+                            <input type="text" id="product-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-price">Preço (ex: 4299.90)</label>
+                            <input type="number" step="0.01" id="product-price" required>
+                        </div>
+                    </div>
 
-            <h2>Gerenciamento de Produtos</h2>
-            <p>Adicione, edite ou remova produtos do catálogo da loja.</p>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product-stock">Quantidade em Estoque</label>
+                            <input type="number" id="product-stock" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-category">Categoria</label>
+                            <select id="product-category" required>
+                                <option value="" disabled selected>Selecione uma categoria</option>
+                                <option value="hardware">Hardware</option>
+                                <option value="pc-gamer">PC Gamer</option>
+                                <option value="perifericos">Periféricos</option>
+                                <option value="ofertas">Ofertas</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-image">URL da Imagem 1</label>
+                        <input type="text" id="product-image" placeholder="Cole o link da imagem aqui">
+                    </div>
 
-            <form id="product-form" class="admin-form">
-                <h3 id="form-title" class="admin-form-title">Adicionar Novo Produto</h3>
-                <input type="hidden" id="product-id"> <div class="form-row">
-                    <div class="form-group">
-                        <label for="product-name">Nome do Produto</label>
-                        <input type="text" id="product-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="product-price">Preço (ex: 4299.90)</label>
-                        <input type="number" step="0.01" id="product-price" required>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="product-stock">Quantidade em Estoque</label>
-                        <input type="number" id="product-stock" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="product-category">Categoria</label>
-                        <select id="product-category" required>
-                            <option value="" disabled selected>Selecione uma categoria</option>
-                            <option value="hardware">Hardware</option>
-                            <option value="pc-gamer">PC Gamer</option>
-                            <option value="perifericos">Periféricos</option>
-                        </select>
-                    </div>
-                </div>
                     <div class="form-group checkbox-group">
                         <input type="checkbox" id="product-offer">
                         <label for="product-offer">Marcar como oferta</label>
                     </div>
-                <button type="submit" id="save-product-btn" class="btn-primary-admin">Salvar Produto</button>
-                <button type="button" id="cancel-edit-btn" class="btn-secondary-admin" style="display: none;">Cancelar Edição</button>
-                <div id="upload-progress" style="display:none; margin-top: 10px;">Enviando imagem... 0%</div>
-            </form>
 
-            <hr class="admin-divider">
+                    <div style="margin-top: 20px;">
+                        <button type="submit" id="save-product-btn" class="btn-primary-admin">Salvar Produto</button>
+                        <button type="button" id="cancel-edit-btn" class="btn-secondary-admin" style="display: none;">Cancelar Edição</button>
+                    </div>
+                </form>
+            </div>
 
-            <h2>Produtos Atuais</h2>
-            <div id="admin-product-list" class="admin-product-list">
+            <div id="view-products" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2>Produtos Atuais</h2>
+                    <button onclick="irParaAdicionar()" class="btn-primary-admin" style="padding: 8px 15px; font-size: 14px;">+ Novo Produto</button>
                 </div>
+                <p>Lista de todos os produtos cadastrados no sistema.</p>
+
+                <hr class="admin-divider">
+
+                <div id="admin-product-list" class="admin-product-list">
+                    <p>Carregando lista...</p>
+                </div>
+            </div>
+
         </div>
     </main>
 
     <footer class="admin-footer">
         <div class="admin-footer-content">
             <p>&copy; 2025 BOOMBUM Admin - Todos os direitos reservados.</p>
-            <p>Desenvolvido para gerenciamento interno.</p>
         </div>
     </footer>
 
     <script src="./script/admin.js" defer></script>
-
 </body>
 </html>
