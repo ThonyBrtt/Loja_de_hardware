@@ -1,4 +1,3 @@
-// --- 💅 CARREGA CSS DO SIDEBAR DINAMICAMENTE ---
 (function loadSidebarCSS() {
   const existing = document.querySelector('link[href="../css/sidebar.css"]');
   if (!existing) {
@@ -9,9 +8,7 @@
   }
 })();
 
-// --- 🔥 INICIALIZAÇÃO DO FIREBASE (UMA ÚNICA VEZ) ---
 (function initializeFirebase() {
-  // Evita reinicialização se já existir
   if (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length) {
     console.log("Firebase já inicializado.");
     return;
@@ -35,12 +32,10 @@
   }
 })();
 
-// --- 🧠 INSTÂNCIAS GLOBAIS ---
 const db = firebase.firestore();
 const auth = firebase.auth();
 
 document.addEventListener("DOMContentLoaded", () => {
-  // --- 🧩 CRIA E INSERE O SIDEBAR ---
   const sidebarContainer = document.createElement("div");
   sidebarContainer.id = "sidebar-root";
   sidebarContainer.innerHTML = `
@@ -70,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const cartIcon = document.querySelector('.actions .icon img[alt="Carrinho"]');
   const finalizarBtn = sidebarContainer.querySelector("#finalizar-compra");
 
-  // --- ABRIR / FECHAR SIDEBAR ---
   if (cartIcon) {
     cartIcon.style.cursor = "pointer";
     cartIcon.addEventListener("click", () => {
@@ -95,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// --- 🛒 FUNÇÕES GLOBAIS DO CARRINHO ---
 window.adicionarAoCarrinho = async function (produtoId) {
   const user = auth.currentUser;
   if (!user) {

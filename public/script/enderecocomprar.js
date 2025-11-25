@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  // 🔥 --- FIREBASE (usa o mesmo já inicializado no sidebar.js) ---
   if (!firebase.apps.length) {
     const firebaseConfig = {
       apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
@@ -17,13 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const db = firebase.firestore();
   const auth = firebase.auth();
 
-  // 🧾 --- ELEMENTOS ---
   const listaEnderecos = document.getElementById("lista-enderecos");
   const btnNovo = document.getElementById("btn-novo-endereco");
   const btnConfirmar = document.getElementById("btn-confirmar");
   const totalPedidoSpan = document.getElementById("total-pedido");
 
-  // 👤 --- VERIFICA LOGIN ---
   auth.onAuthStateChanged(async (user) => {
     if (!user) {
       listaEnderecos.innerHTML = "<p>Faça login para ver seus endereços.</p>";
@@ -34,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
     await carregarResumoPedido(user.uid);
   });
 
-  // 📍 --- CARREGAR ENDEREÇOS ---
   async function carregarEnderecos(uid) {
     try {
       const ref = db.collection("users").doc(uid).collection("addresses");
@@ -75,7 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 💰 --- CARREGAR RESUMO DO PEDIDO ---
   async function carregarResumoPedido(uid) {
     try {
       const userDoc = await db.collection("users").doc(uid).get();
@@ -101,7 +96,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 🟢 --- CONFIRMAR E IR PARA PAGAMENTO ---
   btnConfirmar.addEventListener("click", async () => {
     const selecionado = document.querySelector('input[name="endereco"]:checked');
     if (!selecionado) return alert("Selecione um endereço antes de continuar.");
@@ -131,7 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      // ✅ CHAMA API HOSPEDADA NA VERCEL
      const response = await fetch("https://boombum-api.vercel.app/api/create-preference", {
   method: "POST",
   headers: { "Content-Type": "application/json" },

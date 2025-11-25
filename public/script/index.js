@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  // --- 🖼️ CARROSSEL DE IMAGENS ---
   const imageSlides = document.querySelector('.carousel-slides');
   const images = document.querySelectorAll('.carousel-slides img');
   const prevImgBtn = document.querySelector('.carousel-container .prev');
@@ -33,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCarousel();
   }
 
-  // --- 🔥 FIREBASE ---
   if (typeof firebase === "undefined" || !firebase.apps.length) {
     console.error("⚠️ Firebase não foi inicializado! Verifique se o arquivo sidebar.js é carregado antes deste.");
     return;
@@ -41,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const db = firebase.firestore();
 
-  // --- 🛍️ PRODUTOS EM DESTAQUE ---
   const productGrid = document.getElementById('product-grid');
   const prevProductBtn = document.getElementById('scroll-prev-btn');
   const nextProductBtn = document.getElementById('scroll-next-btn');
