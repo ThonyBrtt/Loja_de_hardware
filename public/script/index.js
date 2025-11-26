@@ -76,16 +76,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const installmentPrice = (product.price / 12).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
       cardsHTML += `
-        <div class="product-card">
+      <div class="product-card">
           <img src="${imgUrl}" alt="${product.name}">
           <h3 class="product-name">${product.name}</h3>
           <p class="product-price-new">${formattedPrice}</p>
           <p class="product-installments">12x de ${installmentPrice} sem juros</p>
-          <div class="product-buttons">
-            <button class="btn btn-add-cart" onclick="window.adicionarAoCarrinho('${productId}')">ADICIONAR AO CARRINHO</button>
-            <button class="btn btn-buy" onclick="window.comprarProduto('${productId}')">COMPRAR</button>
-          </div>
+        <div class="product-buttons">
+          <button class="btn btn-add-cart" onclick="alert('Produto adicionado com sucesso!'); window.adicionarAoCarrinho('${productId}')">ADICIONAR AO CARRINHO</button>
+          <button class="btn btn-buy" onclick="window.comprarProduto('${productId}')">COMPRAR</button>
         </div>
+      </div>
       `;
     });
 

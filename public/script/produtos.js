@@ -46,7 +46,7 @@ function renderProducts(docs) {
             <p class="product-installments">12x de ${installmentPrice} sem juros</p>
         </div>
         <div class="product-buttons">
-          <button class="btn btn-add-cart" onclick="window.adicionarAoCarrinho('${productId}')">ADICIONAR AO CARRINHO</button>
+          <button class="btn btn-add-cart" onclick="alert('Produto adicionado com sucesso!'); window.adicionarAoCarrinho('${productId}')">ADICIONAR AO CARRINHO</button>
           <button class="btn btn-buy" data-id="${productId}">COMPRAR</button>
         </div>
       </div>
