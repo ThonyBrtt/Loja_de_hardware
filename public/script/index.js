@@ -33,12 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (typeof firebase === "undefined" || !firebase.apps.length) {
-    console.error("⚠️ Firebase não foi inicializado! Verifique se o arquivo sidebar.js é carregado antes deste.");
+    console.error("⚠️ Erro: Scripts do Firebase não carregados no HTML.");
     return;
   }
 
   const db = firebase.firestore();
-
   const productGrid = document.getElementById('product-grid');
   const prevProductBtn = document.getElementById('scroll-prev-btn');
   const nextProductBtn = document.getElementById('scroll-next-btn');
@@ -50,9 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
       .get()
       .then(snapshot => renderProducts(snapshot.docs))
       .catch(error => {
-        console.error("Erro ao buscar produtos em destaque:", error);
+        console.error("Erro ao buscar destaques:", error);
         if (productGrid) {
-          productGrid.innerHTML = `<p style="color:red; text-align:center;">Não foi possível carregar os produtos.</p>`;
+          productGrid.innerHTML = `<p style="color:red; text-align:center;">Erro ao carregar ofertas.</p>`;
         }
       });
   }
@@ -61,54 +60,39 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!productGrid) return;
 
     if (!docs.length) {
-      productGrid.innerHTML = '<p>Nenhum produto em destaque no momento.</p>';
+      productGrid.innerHTML = '<p>Nenhum produto em destaque.</p>';
       return;
     }
 
     let cardsHTML = '';
+    
     docs.forEach(doc => {
       const product = doc.data();
       const productId = doc.id;
-      const imageUrl1 = product.imageUrl1 || "https://via.placeholder.com/300x300.png?text=Sem+Imagem";
+
+      const imgUrl = product.imageUrl1 || product.imageUrl || "https://via.placeholder.com/300x300.png?text=Sem+Imagem";
+      
       const formattedPrice = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       const installmentPrice = (product.price / 12).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
       cardsHTML += `
         <div class="product-card">
-          <img src="${imageUrl1}" alt="${product.name}">
+          <img src="${imgUrl}" alt="${product.name}">
           <h3 class="product-name">${product.name}</h3>
           <p class="product-price-new">${formattedPrice}</p>
           <p class="product-installments">12x de ${installmentPrice} sem juros</p>
           <div class="product-buttons">
-            <button class="btn btn-add-cart" data-id="${productId}">ADICIONAR AO CARRINHO</button>
-            <button class="btn btn-buy" data-id="${productId}">COMPRAR</button>
+            <button class="btn btn-add-cart" onclick="window.adicionarAoCarrinho('${productId}')">ADICIONAR AO CARRINHO</button>
+            <button class="btn btn-buy" onclick="window.comprarProduto('${productId}')">COMPRAR</button>
           </div>
         </div>
       `;
     });
 
     productGrid.innerHTML = cardsHTML;
-    addButtonEvents();
   }
 
-  function addButtonEvents() {
-    document.querySelectorAll('.btn-buy').forEach(btn => {
-      btn.addEventListener('click', e => comprarProduto(e.target.dataset.id));
-    });
-
-    document.querySelectorAll('.btn-add-cart').forEach(btn => {
-      btn.addEventListener('click', e => {
-        const id = e.target.dataset.id;
-        if (typeof adicionarAoCarrinho === "function") {
-          adicionarAoCarrinho(id);
-        } else {
-          alert("Erro: função adicionarAoCarrinho não encontrada!");
-        }
-      });
-    });
-  }
-
-  function comprarProduto(produtoId) {
+  window.comprarProduto = function(produtoId) {
     localStorage.setItem('produtoSelecionado', produtoId);
     window.location.href = 'comprar.html';
   }
@@ -117,17 +101,13 @@ document.addEventListener('DOMContentLoaded', () => {
     nextProductBtn.addEventListener('click', () => {
       const card = productGrid.querySelector('.product-card');
       if (!card) return;
-      const cardWidth = card.offsetWidth;
-      const gap = 25;
-      productGrid.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+      productGrid.scrollBy({ left: card.offsetWidth + 45, behavior: 'smooth' });
     });
 
     prevProductBtn.addEventListener('click', () => {
       const card = productGrid.querySelector('.product-card');
       if (!card) return;
-      const cardWidth = card.offsetWidth;
-      const gap = 25;
-      productGrid.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+      productGrid.scrollBy({ left: -(card.offsetWidth + 45), behavior: 'smooth' });
     });
   }
 

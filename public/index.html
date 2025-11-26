@@ -33,8 +33,14 @@
             </div>
           </div>
         </div>
-        <div class="icon"><img src="./midia/header/sac.png" alt="SAC"></div>
-        <div class="icon"><img src="./midia/header/carshopping.png" alt="Carrinho"></div>
+        <div class="icon" id="abrir-sac" style="cursor: pointer;">
+            <img src="./midia/header/sac.png" alt="SAC">
+        </div>
+
+        <div class="icon" id="cart-trigger" style="cursor: pointer;">
+          <img src="./midia/header/carshopping.png" alt="Carrinho">
+          <span id="cart-count" style="background:red; color:white; border-radius:50%; font-size:10px; padding:2px 5px; position:absolute; margin-left:15px; margin-top:-10px; display:none;">0</span>
+        </div>
       </div>
     </div>
 
@@ -111,6 +117,25 @@
     </div>
   </footer>
 
+  <div class="cart-overlay" id="cart-overlay"></div>
+    <div class="cart-sidebar" id="cart-sidebar">
+      <div class="cart-header">
+        <h3>Meu Carrinho</h3>
+        <button id="close-cart" class="close-btn">&times;</button>
+      </div>
+    
+      <div class="cart-items" id="cart-items-container">
+        <p class="empty-msg">Seu carrinho está vazio.</p>
+      </div>
+
+      <div class="cart-footer">
+         <div class="total-price">
+            <span>Total:</span>
+            <span id="cart-total-value">R$ 0,00</span>
+        </div>
+        <a href="carrinhocompra.html" class="btn-checkout">Finalizar Compra</a>
+      </div>
+  </div>
 
   <script>
     const slides = document.querySelector('.carousel-slides');
@@ -175,6 +200,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <script src="./script/sidebar.js"></script>
+  <script src="./script/sac.js"></script>
   <script src="./script/conta.js"></script>
   <script src="./script/produtos.js"></script>
   <script src="./script/index.js"></script>
