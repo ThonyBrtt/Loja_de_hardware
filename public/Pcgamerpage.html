@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="./midia/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOOMBUM | Pc gamer</title>
+    <title>BOOMBUM | PC Gamer</title>
     <link rel="stylesheet" href="./css/compras.css">
-    <script src="./script/sidebar.js" defer></script>
-</head>
+    </head>
+
 <body data-category="pc-gamer">
+
   <header id="mainHeader">
     <div class="topbar">
       <div class="logo">
@@ -32,14 +33,13 @@
         <div class="icon">
           <img src="./midia/header/sac.png" alt="SAC">
         </div>
-        <div class="icon">
-          <img src="./midia/header/carshopping.png" alt="Carrinho">
+        <div class="icon" id="abrir-carrinho" style="cursor: pointer;">
+            <img src="./midia/header/carshopping.png" alt="Carrinho">
         </div>
       </div>
     </div>
 
     <div class="categories">
-
       <a href="ofertaspage.html">Ofertas</a>
       <a href="hardwarepage.html">Hardware</a>
       <a href="Pcgamerpage.html">PC Gamer</a>
@@ -47,25 +47,24 @@
     </div>
   </header>
 
-    <main class="main-content">
+  <main class="main-content">
+    <div class="filter-bar">
+      <label for="filterSelect">Filtrar por:</label>
+      <select id="filterSelect">
+        <option value="recentes">Mais recentes</option>
+        <option value="precoMenor">Menor preço</option>
+        <option value="precoMaior">Maior preço</option>
+        <option value="alfabetico">Ordem alfabética (A–Z)</option>
+      </select>
+    </div>
 
-  <div class="filter-bar">
-    <label for="filterSelect">Filtrar por:</label>
-    <select id="filterSelect">
-      <option value="recentes">Mais recentes</option>
-      <option value="precoMenor">Menor preço</option>
-      <option value="precoMaior">Maior preço</option>
-      <option value="alfabetico">Ordem alfabética (A–Z)</option>
-    </select>
-  </div>
+    <div class="category-container">
+      <h1 class="category-title">PC Gamer</h1>
+      <div class="product-grid" id="product-grid"></div>
+    </div>
+  </main>
 
-  <div class="category-container">
-    <h1 class="category-title">PC Gamer</h1>
-    <div class="product-grid" id="product-grid"></div>
-  </div>
-  
-      </main>
-    <footer>
+  <footer>
     <div class="footer-container">
       <div>
         <h3>Atendimento</h3>
@@ -100,12 +99,16 @@
       </div>
     </div>
   </footer>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<script src="./script/produtos.js"></script> 
-<script src="./script/conta.js"></script>
 
-     
-    </body>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  
+  <script src="./script/sidebar.js"></script>
+  
+  <script src="./script/produtos.js"></script> 
+  
+  <script src="./script/conta.js"></script>
+  
+  </body>
 </html>

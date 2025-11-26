@@ -26,9 +26,9 @@
 
   try {
     firebase.initializeApp(firebaseConfig);
-    console.log("✅ Firebase inicializado com sucesso (sidebar.js)");
+    console.log("Firebase inicializado com sucesso (sidebar.js)");
   } catch (error) {
-    console.warn("⚠️ Erro ao inicializar Firebase:", error);
+    console.warn("0Erro ao inicializar Firebase:", error);
   }
 })();
 

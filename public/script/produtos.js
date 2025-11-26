@@ -1,22 +1,7 @@
-
-const firebaseConfig = {
-  apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
-  authDomain: "boombum-eaf32.firebaseapp.com",
-  projectId: "boombum-eaf32",
-  storageBucket: "boombum-eaf32.firebasestorage.app",
-  messagingSenderId: "827065363375",
-  appId: "1:827065363375:web:913f128e651fcdbe145d5a",
-  measurementId: "G-D7CBRK53E0"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-
 const productGrid = document.getElementById('product-grid');
-const pageIdentifier = document.body.dataset.category;
-let currentQuery = null;
 
+const pageIdentifier = document.body.dataset.category; 
+let currentQuery = null;
 
 function renderProducts(docs) {
   if (!docs.length) {
@@ -27,17 +12,21 @@ function renderProducts(docs) {
   productGrid.innerHTML = '';
 
   docs.forEach(doc => {
-    const product = doc.data();
+    const product = typeof doc.data === 'function' ? doc.data() : doc; 
     const productId = doc.id;
 
     const images = [
       product.imageUrl1,
       product.imageUrl2,
-      product.imageUrl3
-    ].filter(Boolean);
+      product.imageUrl3,
+      product.imageUrl 
+    ].filter(Boolean); 
+
+    if (images.length === 0) images.push('https://via.placeholder.com/250?text=Sem+Imagem');
 
     const formattedPrice = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     const installmentPrice = (product.price / 12).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    
     const carouselImages = images.map((img, i) =>
       `<img src="${img}" class="carousel-img ${i === 0 ? 'active' : ''}" alt="${product.name}">`
     ).join('');
@@ -52,10 +41,12 @@ function renderProducts(docs) {
           ` : ''}
         </div>
         <h3 class="product-name">${product.name}</h3>
-        <p class="product-price-new">${formattedPrice}</p>
-        <p class="product-installments">12x de ${installmentPrice} sem juros</p>
+        <div class="prices">
+            <p class="product-price-new">${formattedPrice}</p>
+            <p class="product-installments">12x de ${installmentPrice} sem juros</p>
+        </div>
         <div class="product-buttons">
-          <button class="btn btn-add-cart" data-id="${productId}">ADICIONAR AO CARRINHO</button>
+          <button class="btn btn-add-cart" onclick="window.adicionarAoCarrinho('${productId}')">ADICIONAR AO CARRINHO</button>
           <button class="btn btn-buy" data-id="${productId}">COMPRAR</button>
         </div>
       </div>
@@ -65,9 +56,8 @@ function renderProducts(docs) {
   });
 
   initCarousels();
-  addButtonEvents();
+  addButtonEvents(); 
 }
-
 
 function initCarousels() {
   document.querySelectorAll('.carousel-container').forEach(container => {
@@ -84,18 +74,19 @@ function initCarousels() {
       container.dataset.current = index;
     }
 
-    left?.addEventListener('click', () => {
-      current = (current - 1 + imgs.length) % imgs.length;
-      showImage(current);
+    left?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        current = (current - 1 + imgs.length) % imgs.length;
+        showImage(current);
     });
 
-    right?.addEventListener('click', () => {
-      current = (current + 1) % imgs.length;
-      showImage(current);
+    right?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        current = (current + 1) % imgs.length;
+        showImage(current);
     });
   });
 }
-
 
 function addButtonEvents() {
   document.querySelectorAll('.btn-buy').forEach(btn => {
@@ -107,42 +98,38 @@ function addButtonEvents() {
 
   document.querySelectorAll('.btn-add-cart').forEach(btn => {
     btn.addEventListener('click', e => {
-      const id = e.target.dataset.id;
-      if (typeof addToCart === "function") {
-        addToCart(id); 
-      } else {
-        alert("Carrinho indisponível no momento. Tente novamente.");
-      }
+      e.stopPropagation();
     });
   });
 }
-
 
 function comprarProduto(produtoId) {
   localStorage.setItem('produtoSelecionado', produtoId);
   window.location.href = 'comprar.html';
 }
 
-
 if (!pageIdentifier) {
-  console.error("Identificador de página não encontrado! Adicione data-category='...' na tag <body>.");
+  console.error("⚠️ Identificador de página não encontrado! Adicione data-category='...' na tag <body>.");
 } else {
   let query = db.collection('products');
 
   if (pageIdentifier === 'ofertas') {
     query = query.where('isOnOffer', '==', true);
-  } else {
+  } else if (pageIdentifier !== 'all') {
     query = query.where('category', '==', pageIdentifier);
   }
 
-  query.orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+  query.onSnapshot(snapshot => {
     renderProducts(snapshot.docs);
   }, error => {
     console.error("Erro ao buscar produtos:", error);
-    productGrid.innerHTML = `<p class="error-message">Erro ao carregar produtos. Verifique o console (F12) para criar índice no Firestore.</p>`;
+    if(error.code === 'failed-precondition') {
+        productGrid.innerHTML = `<p class="error-message">Erro de índice no Firestore. Abra o console (F12) e clique no link gerado pelo Firebase.</p>`;
+    } else {
+        productGrid.innerHTML = `<p class="error-message">Erro ao carregar produtos.</p>`;
+    }
   });
 }
-
 
 const filterSelect = document.getElementById('filterSelect');
 
@@ -153,11 +140,11 @@ function aplicarFiltro(tipoFiltro) {
 
   if (pageIdentifier === 'ofertas') {
     query = query.where('isOnOffer', '==', true);
-  } else {
+  } else if (pageIdentifier !== 'all') {
     query = query.where('category', '==', pageIdentifier);
   }
 
-  if (currentQuery) currentQuery();
+  if (currentQuery) currentQuery(); 
 
   currentQuery = query.onSnapshot(snapshot => {
     let produtos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -172,44 +159,23 @@ function aplicarFiltro(tipoFiltro) {
       case 'alfabetico':
         produtos.sort((a, b) => a.name.localeCompare(b.name));
         break;
+      case 'recentes':
       default:
-        produtos.sort((a, b) => b.createdAt?.seconds - a.createdAt?.seconds);
+        produtos.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
         break;
     }
 
-    renderProducts(produtos.map(p => ({ id: p.id, data: () => p })));
+    const docsAdaptados = produtos.map(p => ({
+        id: p.id,
+        data: () => p 
+    }));
+
+    renderProducts(docsAdaptados);
   }, error => {
     console.error("Erro ao aplicar filtro:", error);
-    productGrid.innerHTML = `<p class="error-message">Erro ao aplicar filtro. Veja o console.</p>`;
   });
 }
 
-filterSelect.addEventListener('change', e => aplicarFiltro(e.target.value));
-aplicarFiltro('recentes');
-
-
-function finalizarCompra() {
-  const produtoId = localStorage.getItem('produtoSelecionado');
-  if (!produtoId) return alert("Nenhum produto selecionado!");
-
-  const quantidade = parseInt(document.getElementById('quantidade').value);
-  const pagamento = document.getElementById('pagamento').value;
-
-  const produtoRef = db.collection('products').doc(produtoId);
-
-  produtoRef.get().then(doc => {
-    if (!doc.exists) return alert("Produto não encontrado.");
-    const estoqueAtual = doc.data().stock || 0;
-
-    if (quantidade > estoqueAtual) return alert("Quantidade maior que o estoque!");
-
-    return produtoRef.update({ stock: estoqueAtual - quantidade });
-  }).then(() => {
-    alert(`Compra finalizada com sucesso!\nMétodo: ${pagamento}\nQuantidade: ${quantidade}`);
-    localStorage.removeItem('produtoSelecionado');
-    window.location.href = '/index.html';
-  }).catch(err => {
-    console.error(err);
-    alert("Erro ao finalizar compra.");
-  });
+if(filterSelect) {
+    filterSelect.addEventListener('change', e => aplicarFiltro(e.target.value));
 }

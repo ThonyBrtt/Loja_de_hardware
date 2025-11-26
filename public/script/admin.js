@@ -1,4 +1,3 @@
-// --- 1. CONFIGURAÇÃO FIREBASE ---
 const firebaseConfig = {
     apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
     authDomain: "boombum-eaf32.firebaseapp.com",
@@ -16,18 +15,14 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// --- 2. SELETORES DOM ---
-// Navegação
 const linkDashboard = document.getElementById('link-dashboard');
 const linkProducts = document.getElementById('link-products');
 const viewDashboard = document.getElementById('view-dashboard');
 const viewProducts = document.getElementById('view-products');
 
-// Elementos Gerais
 const adminUserEmail = document.getElementById('admin-user-email');
 const adminLogoutBtn = document.getElementById('admin-logout-btn');
 
-// Elementos do Formulário e Lista
 const productForm = document.getElementById('product-form');
 const adminProductList = document.getElementById('admin-product-list');
 const saveProductBtn = document.getElementById('save-product-btn');
@@ -35,8 +30,6 @@ const cancelEditBtn = document.getElementById('cancel-edit-btn');
 const formTitleDisplay = document.getElementById('form-title-display');
 
 let currentEditingId = null;
-
-// --- 3. LÓGICA DE NAVEGAÇÃO (ABAS) ---
 
 function showDashboard() {
     viewDashboard.style.display = 'block';
@@ -73,7 +66,6 @@ if(linkProducts) {
     });
 }
 
-// --- 4. AUTENTICAÇÃO ---
 auth.onAuthStateChanged(user => {
     if (user) {
         db.collection('users').doc(user.uid).get().then(doc => {
@@ -99,7 +91,6 @@ if (adminLogoutBtn) {
     });
 }
 
-// --- 5. SALVAR / ATUALIZAR PRODUTO ---
 productForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -108,7 +99,6 @@ productForm.addEventListener('submit', (e) => {
         price: parseFloat(document.getElementById('product-price').value),
         stock: parseInt(document.getElementById('product-stock').value),
         category: document.getElementById('product-category').value,
-        // CORREÇÃO AQUI: Salvando como imageUrl1 para bater com seu banco
         imageUrl1: document.getElementById('product-image').value, 
         isOnOffer: document.getElementById('product-offer').checked
     };
@@ -133,7 +123,6 @@ productForm.addEventListener('submit', (e) => {
     }
 });
 
-// --- 6. LISTAR PRODUTOS ---
 function loadAdminProducts() {
     db.collection('products').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
         adminProductList.innerHTML = '';
@@ -146,8 +135,6 @@ function loadAdminProducts() {
         snapshot.forEach(doc => {
             const product = doc.data();
             const precoFormatado = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-            // CORREÇÃO AQUI: Buscando imageUrl1 (com fallback para imageUrl antiga se houver)
             const imgUrl = product.imageUrl1 || product.imageUrl || 'https://via.placeholder.com/150';
 
             const productItem = document.createElement('div');
@@ -170,8 +157,6 @@ function loadAdminProducts() {
     });
 }
 
-// --- 7. FUNÇÕES DE AÇÃO ---
-
 window.prepararEdicao = function(id) {
     db.collection('products').doc(id).get().then(doc => {
         if (doc.exists) {
@@ -181,7 +166,6 @@ window.prepararEdicao = function(id) {
             document.getElementById('product-price').value = product.price;
             document.getElementById('product-stock').value = product.stock;
             document.getElementById('product-category').value = product.category;
-            // CORREÇÃO AQUI: Carregando do campo imageUrl1
             document.getElementById('product-image').value = product.imageUrl1 || product.imageUrl || '';
             document.getElementById('product-offer').checked = product.isOnOffer || false;
             document.getElementById('product-id').value = id;
@@ -204,7 +188,6 @@ window.deletarProduto = function(id) {
     }
 };
 
-// --- 8. RESETAR FORMULÁRIO ---
 function resetForm() {
     productForm.reset();
     currentEditingId = null;
