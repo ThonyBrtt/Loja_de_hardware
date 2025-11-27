@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
 
     const style = document.createElement('style');
     style.innerHTML = `
@@ -26,12 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
         
         .sac-form label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 14px; }
         .sac-form select, .sac-form textarea {
-            width: 100%; padding: 10px; margin-bottom: 15px;
+            width: 100%; padding: 10px; margin-bottom: 10px;
             border: 1px solid #ddd; border-radius: 5px;
             font-family: inherit; box-sizing: border-box;
         }
-        .sac-form textarea { height: 100px; resize: vertical; }
-        
+
+        /* 🔥 BLOQUEAR RESIZE DO TEXTAREA */
+        .sac-form textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        /* 🔥 Estilo do contador */
+        #char-count {
+            font-size: 12px;
+            color: #666;
+            text-align: right;
+            margin-top: -5px;
+            margin-bottom: 10px;
+        }
+
         .sac-btn {
             width: 100%; background: #084c8c; color: white;
             border: none; padding: 12px; border-radius: 5px;
@@ -65,7 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </select>
 
                     <label for="bug-desc">Descrição do Erro:</label>
-                    <textarea id="bug-desc" placeholder="Descreva o que aconteceu..." required></textarea>
+                    <textarea id="bug-desc" maxlength="300" placeholder="Descreva o que aconteceu..." required></textarea>
+
+                    <!-- 🔥 Contador de caracteres -->
+                    <div id="char-count">0 / 300</div>
 
                     <button type="submit" class="sac-btn">Enviar Report</button>
                 </form>
@@ -79,6 +95,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = document.getElementById('close-sac');
     const form = document.getElementById('sac-form');
     const userNameSpan = document.getElementById('sac-user-name');
+
+    const descInput = document.getElementById('bug-desc');
+    const charCount = document.getElementById('char-count');
+    const maxChars = 300;
+
+    // 🔥 Atualiza contador em tempo real
+    descInput.addEventListener('input', () => {
+        const length = descInput.value.length;
+        charCount.textContent = `${length} / ${maxChars}`;
+    });
 
     function toggleSac() {
         if (overlay.classList.contains('visible')) {
@@ -95,18 +121,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const user = firebase.auth().currentUser;
 
             if (!user) {
-                alert(" Para participar do Beta e relatar bugs, você precisa fazer login primeiro!");
+                alert("Para participar do Beta e relatar bugs, você precisa fazer login primeiro!");
                 window.location.href = "login.html";
                 return;
             }
-            
+
             userNameSpan.textContent = user.email;
             toggleSac();
         });
     }
 
     if (closeBtn) closeBtn.addEventListener('click', toggleSac);
-    
+
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) toggleSac();
     });
@@ -122,13 +148,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const user = firebase.auth().currentUser;
         if (!user) return;
 
-        const page = document.getElementById('bug-page').value;
-        const description = document.getElementById('bug-desc').value;
+        const page = document.getElementById('bug-page').value.trim();
+        const description = descInput.value.trim();
+
+        // 🔥 VALIDAÇÃO
+        if (page === "" || description === "") {
+            alert("Por favor, preencha todos os campos antes de enviar o report.");
+            return;
+        }
+        if (description.length < 5) {
+            alert("A descrição do erro deve conter pelo menos 5 caracteres.");
+            return;
+        }
 
         const bugData = {
             page: page,
             description: description,
-            userEmail: user.email, 
+            userEmail: user.email,
             userId: user.uid,
             date: firebase.firestore.FieldValue.serverTimestamp(),
             status: "pendente"
@@ -144,8 +180,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             alert("Bug reportado com sucesso! A equipe BoomBum agradece.");
             form.reset();
+            charCount.textContent = "0 / 300";
             toggleSac();
-            
+
             btn.innerText = originalText;
             btn.disabled = false;
 
@@ -154,4 +191,5 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("Erro ao enviar. Tente novamente.");
         }
     });
+
 });

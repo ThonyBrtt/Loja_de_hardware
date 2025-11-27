@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
       updateCarousel();
     });
 
-    setInterval(() => nextImgBtn.click(), 5000);
+    setInterval(() => nextImgBtn.click(), 6000);
     updateCarousel();
   }
 
@@ -65,13 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let cardsHTML = '';
-    
+
     docs.forEach(doc => {
       const product = doc.data();
       const productId = doc.id;
 
       const imgUrl = product.imageUrl1 || product.imageUrl || "https://via.placeholder.com/300x300.png?text=Sem+Imagem";
-      
+
       const formattedPrice = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       const installmentPrice = (product.price / 12).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     productGrid.innerHTML = cardsHTML;
   }
 
-  window.comprarProduto = function(produtoId) {
+  window.comprarProduto = function (produtoId) {
     localStorage.setItem('produtoSelecionado', produtoId);
     window.location.href = 'comprar.html';
   }
