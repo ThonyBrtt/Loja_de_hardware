@@ -16,14 +16,14 @@ const auth = firebase.auth();
 
 
 const main = document.getElementById("detalhesProduto");
-main.innerHTML = "<p>Carregando seu carrinho...</p>";
+main.innerHTML = "<p style='color: #333; text-align: center; font-size: 18px; margin-top: 50px;'>Carregando seu carrinho...</p>";
 
 
 async function carregarCarrinho() {
   const user = auth.currentUser;
 
   if (!user) {
-    main.innerHTML = "<p>Você precisa estar logado para ver o carrinho.</p>";
+    main.innerHTML = "<p style='color: #333; text-align: center; font-size: 18px; margin-top: 50px;'>Seu carrinho está vazio.</p>";
     return;
   }
 
@@ -33,7 +33,7 @@ async function carregarCarrinho() {
     const cart = userDoc.data()?.cart || [];
 
     if (cart.length === 0) {
-      main.innerHTML = "<p>Seu carrinho está vazio.</p>";
+      
       return;
     }
 
@@ -49,7 +49,7 @@ async function carregarCarrinho() {
 
       const produto = prodDoc.data();
       const subtotal = produto.price * item.quantidade;
-      total += subtotal;
+main.innerHTML = "<p>Seu carrinho está vazio.</p>";      total += subtotal;
 
       html += `
         <div class="produto-card">
@@ -76,7 +76,6 @@ async function carregarCarrinho() {
         <div class="carrinho-resumo">
           <h3>Resumo da compra</h3>
           <div class="linha"><span>Subtotal:</span> <span>R$ ${total.toLocaleString("pt-BR")}</span></div>
-          <div class="linha"><span>Desconto no PIX:</span> <span class="pix">R$ ${totalPix.toLocaleString("pt-BR")}</span></div>
           <div class="total">Total: R$ ${total.toLocaleString("pt-BR")}</div>
           <p class="parcelamento">ou em até 10x sem juros</p>
           <button class="btn-finalizar" id="finalizarCompra">Finalizar Compra</button>
