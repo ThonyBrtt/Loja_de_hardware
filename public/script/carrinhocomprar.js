@@ -1,190 +1,277 @@
-const firebaseConfig = {
-  apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
-  authDomain: "boombum-eaf32.firebaseapp.com",
-  projectId: "boombum-eaf32",
-  storageBucket: "boombum-eaf32.firebasestorage.app",
-  messagingSenderId: "827065363375",
-  appId: "1:827065363375:web:913f128e651fcdbe145d5a",
-  measurementId: "G-D7CBRK53E0",
-};
-
-if (!firebase.apps.length) {
+if (typeof firebase === 'undefined') {
+  console.error("Firebase SDK não carregado!");
+} else if (!firebase.apps.length) {
+  const firebaseConfig = {
+    apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
+    authDomain: "boombum-eaf32.firebaseapp.com",
+    projectId: "boombum-eaf32",
+    storageBucket: "boombum-eaf32.firebasestorage.app",
+    messagingSenderId: "827065363375",
+    appId: "1:827065363375:web:913f128e651fcdbe145d5a",
+    measurementId: "G-D7CBRK53E0"
+  };
   firebase.initializeApp(firebaseConfig);
 }
+
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-const main = document.getElementById("detalhesProduto");
-main.innerHTML = "<p style='color: #333; text-align: center; font-size: 18px; margin-top: 50px;'>Carregando seu carrinho...</p>";
+const container = document.getElementById('detalhesProduto');
+const btnVoltar = document.getElementById('voltar');
 
-async function carregarCarrinho() {
-  const user = auth.currentUser;
+if (btnVoltar) {
+  btnVoltar.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = 'index.html';
+  });
+}
 
-  if (!user) {
-    alert("🔒 Você precisa fazer login para acessar o carrinho!");
-    window.location.href = "login.html";
-    return;
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  container.innerHTML = "<p style='text-align:center; margin-top:50px;'>Carregando informações...</p>";
 
-  try {
-    const userRef = db.collection("users").doc(user.uid);
-    const userDoc = await userRef.get();
-    const cart = userDoc.data()?.cart || [];
-
-    if (cart.length === 0) {
-      main.innerHTML = `
-        <div style="text-align: center; padding: 50px;">
-            <h2 style="color:#333;">Seu carrinho está vazio 🛒</h2>
-            <a href="index.html" style="color: #ff6600; font-weight:bold; text-decoration:none;">Voltar as compras</a>
-        </div>`;
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      alert("Sessão expirada. Faça login novamente.");
+      window.location.href = "login.html";
       return;
     }
 
-    let total = 0;
-    let html = `
-      <div class="carrinho-container">
-        <div class="carrinho-produtos">
-    `;
+    const produtoId = localStorage.getItem('produtoSelecionado');
 
-    for (const item of cart) {
-      const prodDoc = await db.collection("products").doc(item.produtoId).get();
-      if (!prodDoc.exists) continue;
-
-      const produto = prodDoc.data();
-      const subtotal = produto.price * item.quantidade;
-      total += subtotal;
-      const estoque = produto.stock || 0;
-
-      const imgUrl = produto.imageUrl1 || produto.imageUrl || "https://via.placeholder.com/100";
-
-      html += `
-        <div class="produto-card" id="card-${item.produtoId}" data-price="${produto.price}" data-stock="${estoque}">
-          <img src="${imgUrl}" alt="${produto.name}" class="produto-img" />
-          <div class="produto-info">
-            <h3>${produto.name}</h3>
-            <p>Preço unitário: R$ ${produto.price.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
-            <p style="font-size: 12px; color: #666;">Disponível: ${estoque}</p>
-            <div class="quantidade">
-              <button onclick="alterarQtd('${item.produtoId}', -1)">−</button>
-              <span id="qtd-${item.produtoId}">${item.quantidade}</span>
-              <button onclick="alterarQtd('${item.produtoId}', 1)">+</button>
-            </div>
-            <p>Subtotal: R$ <span id="subtotal-${item.produtoId}">${subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span></p>
-            <button onclick="removerItem('${item.produtoId}')" class="remover-btn">Remover</button>
-          </div>
-        </div>
-      `;
+    try {
+      if (produtoId) {
+        await carregarProdutoUnico(produtoId, user);
+      } else {
+        await carregarCarrinhoCompleto(user);
+      }
+    } catch (error) {
+      console.error("Erro fatal:", error);
+      container.innerHTML = `<p style='text-align:center; color:red;'>Ocorreu um erro ao carregar: ${error.message}</p>`;
     }
+  });
+});
 
-    html += `
+async function carregarProdutoUnico(produtoId, user) {
+  const doc = await db.collection('products').doc(produtoId).get();
+
+  if (!doc.exists) {
+    container.innerHTML = '<p style="text-align:center;">Produto não encontrado.</p>';
+    return;
+  }
+
+  const produto = doc.data();
+  const estoque = produto.stock || 0;
+  const formattedPrice = produto.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+  let htmlInputs, htmlBotoes;
+
+  if (estoque > 0) {
+    htmlInputs = `
+        <label for="quantidade">Quantidade:</label>
+        <input type="number" id="quantidade" min="1" max="${estoque}" value="1">
+
+        <label for="pagamento">Método de Pagamento:</label>
+        <select id="pagamento">
+          <option value="cartao">Cartão de Crédito</option>
+          <option value="pix">PIX</option>
+        </select>
+
+        <p>Total: <strong id="totalPrice">${formattedPrice}</strong></p>
+
+        <div id="parcelamento-container">
+          <label for="parcelas">Parcelamento:</label>
+          <select id="parcelas"></select>
         </div>
-        <div class="carrinho-resumo">
-          <h3>Resumo da compra</h3>
-          <div class="linha"><span>Total:</span> <span id="total-geral">R$ ${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span></div>
-          <p class="parcelamento">ou em até 12x no cartão</p>
-          <button class="btn-finalizar" id="finalizarCompra">Finalizar Compra</button>
+    `;
+    htmlBotoes = `
+        <button id="finalizarCompra">Continuar para Endereço ➝</button>
+        <button id="cancelarCompra" class="btn-cancelar">Cancelar</button>
+    `;
+  } else {
+    htmlInputs = `
+        <div style="background:#ffe6e6; color:#d93025; padding:15px; border-radius:5px; margin:20px 0; text-align:center; font-weight:bold;">
+            PRODUTO ESGOTADO
+        </div>
+    `;
+    htmlBotoes = `
+        <button disabled style="background-color: #ccc; cursor: not-allowed; flex:2;">Indisponível</button>
+        <button id="cancelarCompra" class="btn-cancelar">Voltar</button>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="produto-card-realista">
+      <div class="carousel-container">
+        <img src="${produto.imageUrl1}" class="carousel-img active" alt="${produto.name}">
+        ${produto.imageUrl2 ? `<img src="${produto.imageUrl2}" class="carousel-img" alt="${produto.name}">` : ''}
+        ${produto.imageUrl3 ? `<img src="${produto.imageUrl3}" class="carousel-img" alt="${produto.name}">` : ''}
+        
+        ${(produto.imageUrl2 || produto.imageUrl3) ? `
+          <button class="carousel-btn left">&#10094;</button>
+          <button class="carousel-btn right">&#10095;</button>
+        ` : ''}
+      </div>
+
+      <h2>${produto.name}</h2>
+      <p>Preço unitário: <strong>${formattedPrice}</strong></p>
+      <p id="estoque">Estoque disponível: <strong>${estoque}</strong></p>
+
+      ${htmlInputs}
+
+      <div class="botoes-compra">
+        ${htmlBotoes}
+      </div>
+    </div>
+  `;
+
+  configurarCarrossel(container);
+
+  document.getElementById('cancelarCompra').addEventListener('click', () => {
+    localStorage.removeItem('produtoSelecionado');
+    window.location.href = 'index.html';
+  });
+
+  if (estoque <= 0) return;
+
+  const quantidadeInput = document.getElementById('quantidade');
+  const totalPriceEl = document.getElementById('totalPrice');
+  const pagamentoSelect = document.getElementById('pagamento');
+  const parcelamentoContainer = document.getElementById('parcelamento-container');
+  const parcelasSelect = document.getElementById('parcelas');
+
+  function atualizarOpcoesParcelamento(valorTotal) {
+    parcelasSelect.innerHTML = "";
+    const opcoes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    opcoes.forEach(qtd => {
+      const valorParcela = valorTotal / qtd;
+      const option = document.createElement('option');
+      option.value = qtd;
+      option.textContent = `${qtd}x de ${valorParcela.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} sem juros`;
+      parcelasSelect.appendChild(option);
+    });
+  }
+
+  function verificarPagamento() {
+    if (pagamentoSelect.value === 'pix') {
+      parcelamentoContainer.style.display = 'none';
+    } else {
+      parcelamentoContainer.style.display = 'block';
+    }
+  }
+
+  function atualizarTotal() {
+    let qnt = parseInt(quantidadeInput.value);
+    if (isNaN(qnt) || qnt < 1) { qnt = 1; quantidadeInput.value = 1; }
+    if (qnt > estoque) { qnt = estoque; quantidadeInput.value = estoque; alert(`Atenção: Estoque máximo disponível é ${estoque}.`); }
+
+    const total = produto.price * qnt;
+    totalPriceEl.textContent = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    atualizarOpcoesParcelamento(total);
+  }
+
+  pagamentoSelect.addEventListener('change', verificarPagamento);
+  quantidadeInput.addEventListener('input', atualizarTotal);
+  quantidadeInput.addEventListener('keydown', (e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); });
+
+  verificarPagamento();
+  atualizarTotal();
+
+  document.getElementById('finalizarCompra').addEventListener('click', async () => {
+    const btn = document.getElementById('finalizarCompra');
+    const qnt = parseInt(quantidadeInput.value);
+
+    btn.disabled = true;
+    btn.textContent = "Salvando...";
+
+    try {
+      await db.collection('users').doc(user.uid).update({
+        cart: [{ produtoId: produtoId, quantidade: qnt }]
+      });
+      window.location.href = 'enderecocomprar.html';
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao processar. Tente novamente.");
+      btn.disabled = false;
+      btn.textContent = "Continuar para Endereço ➝";
+    }
+  });
+}
+
+async function carregarCarrinhoCompleto(user) {
+  const userDoc = await db.collection('users').doc(user.uid).get();
+  const cart = userDoc.data()?.cart || [];
+
+  if (cart.length === 0) {
+    container.innerHTML = `
+        <div style="text-align:center; margin-top:50px;">
+            <p>Seu carrinho está vazio.</p>
+            <a href="index.html" style="color:#ff6600; font-weight:bold;">Voltar as compras</a>
+        </div>`;
+    return;
+  }
+
+  let totalGeral = 0;
+  const promises = cart.map(async item => {
+    const doc = await db.collection('products').doc(item.produtoId).get();
+    if (!doc.exists) return null;
+    const p = doc.data();
+    const totalItem = p.price * item.quantidade;
+    totalGeral += totalItem;
+    const img = p.imageUrl1 || p.imageUrl || "https://via.placeholder.com/100";
+
+    return `
+      <div class="produto-card-carrinho">
+        <img src="${img}" alt="${p.name}">
+        <div>
+          <h3>${p.name}</h3>
+          <p>Qtd: ${item.quantidade}</p>
+          <p>Preço: ${(p.price).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+          <p><strong>Total: ${totalItem.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong></p>
+        </div>
+      </div>
+    `;
+  });
+
+  const produtosHTML = await Promise.all(promises);
+  const listaProdutos = produtosHTML.filter(Boolean).join('');
+
+  container.innerHTML = `
+      <div class="carrinho-container">
+        <h2>Resumo do Carrinho</h2>
+        <div class="lista-carrinho">${listaProdutos}</div>
+        <p class="total-geral">Valor total: <strong>${totalGeral.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong></p>
+        
+        <div class="botoes-compra">
+          <button id="finalizarCarrinho">Continuar para Endereço ➝</button>
+          
+          <button id="cancelarCarrinho" class="btn-cancelar">Cancelar</button>
         </div>
       </div>
     `;
 
-    main.innerHTML = html;
-
-    document.getElementById("finalizarCompra").addEventListener("click", finalizarCompra);
-  } catch (error) {
-    console.error(error);
-    main.innerHTML = "<p>Erro ao carregar o carrinho.</p>";
-  }
-}
-
-async function alterarQtd(produtoId, delta) {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const qtdElement = document.getElementById(`qtd-${produtoId}`);
-  const cardElement = document.getElementById(`card-${produtoId}`);
-  const subtotalElement = document.getElementById(`subtotal-${produtoId}`);
-  
-  if (!qtdElement || !cardElement) return;
-
-  const estoqueMax = parseInt(cardElement.getAttribute('data-stock')); // Lê o estoque salvo no HTML
-  let qtdAtual = parseInt(qtdElement.innerText);
-  let novaQtd = qtdAtual + delta;
-
-  if (delta > 0 && novaQtd > estoqueMax) {
-    alert(`Ops! Só temos ${estoqueMax} unidades deste produto em estoque.`);
-    return; 
+  const lista = document.querySelector('.lista-carrinho');
+  if(lista) {
+      lista.style.maxHeight = "400px";
+      lista.style.overflowY = "auto";
   }
 
-  if (novaQtd <= 0) {
-    removerItem(produtoId);
-    return;
-  }
+  document.getElementById('cancelarCarrinho').addEventListener('click', () => {
+    window.location.href = 'index.html';
+  });
 
-  const precoUnitario = parseFloat(cardElement.getAttribute('data-price'));
-  qtdElement.innerText = novaQtd;
-  
-  const novoSubtotal = novaQtd * precoUnitario;
-  subtotalElement.innerText = novoSubtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+  document.getElementById('finalizarCarrinho').addEventListener('click', () => {
+    window.location.href = 'enderecocomprar.html';
+  });
+}
 
-  recalcularTotalVisual();
-
-  const userRef = db.collection("users").doc(user.uid);
-  try {
-      const doc = await userRef.get();
-      let cart = doc.data()?.cart || [];
-      const index = cart.findIndex((i) => i.produtoId === produtoId);
-      
-      if (index >= 0) {
-        cart[index].quantidade = novaQtd;
-        await userRef.update({ cart: cart });
-      }
-  } catch (error) {
-      console.error("Erro ao atualizar banco", error);
+function configurarCarrossel(container) {
+  const imgs = container.querySelectorAll('.carousel-img');
+  if (imgs.length > 1) {
+    let currentImg = 0;
+    const btnLeft = container.querySelector('.carousel-btn.left');
+    const btnRight = container.querySelector('.carousel-btn.right');
+    function showImg(idx) { imgs.forEach((img, i) => img.classList.toggle('active', i === idx)); }
+    btnLeft.addEventListener('click', () => { currentImg = (currentImg - 1 + imgs.length) % imgs.length; showImg(currentImg); });
+    btnRight.addEventListener('click', () => { currentImg = (currentImg + 1) % imgs.length; showImg(currentImg); });
   }
 }
-
-function recalcularTotalVisual() {
-    const cards = document.querySelectorAll('.produto-card');
-    let novoTotal = 0;
-
-    cards.forEach(card => {
-        const preco = parseFloat(card.getAttribute('data-price'));
-        const id = card.id.replace('card-', '');
-        const qtd = parseInt(document.getElementById(`qtd-${id}`).innerText);
-        novoTotal += (preco * qtd);
-    });
-
-    const totalElement = document.getElementById('total-geral');
-    if(totalElement) {
-        totalElement.innerText = "R$ " + novoTotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
-    }
-}
-
-async function removerItem(produtoId) {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const card = document.getElementById(`card-${produtoId}`);
-  if(card) card.style.opacity = "0.5";
-
-  const userRef = db.collection("users").doc(user.uid);
-  const doc = await userRef.get();
-  let cart = doc.data()?.cart || [];
-
-  cart = cart.filter((i) => i.produtoId !== produtoId);
-  await userRef.update({ cart: cart });
-  
-  carregarCarrinho();
-}
-
-function finalizarCompra() {
-  window.location.href = "enderecocomprar.html";
-}
-
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    carregarCarrinho();
-  } else {
-    window.location.href = "login.html";
-  }
-});

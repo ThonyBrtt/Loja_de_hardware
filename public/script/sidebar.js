@@ -1,3 +1,5 @@
+// --- script/sidebar.js (CORRIGIDO E SEGURO) ---
+
 (function loadSidebarCSS() {
   const existing = document.querySelector('link[href="./css/sidebar.css"]');
   if (!existing) {
@@ -28,8 +30,10 @@
   }
 })();
 
-const db = firebase.firestore();
-const auth = firebase.auth();
+// --- FUNÇÕES AUXILIARES SEGURAS ---
+// Usamos isso em vez de declarar 'const db' globalmente para evitar conflito
+function getDB() { return firebase.firestore(); }
+function getAuth() { return firebase.auth(); }
 
 document.addEventListener("DOMContentLoaded", () => {
   const sidebarContainer = document.createElement("div");
@@ -51,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         
         <div id="cart-error-msg" style="display: none; background-color: #ffe6e6; color: #d93025; font-size: 13px; padding: 8px; border: 1px solid #d93025; border-radius: 4px; text-align: center;">
-            Alguns itens excedem o estoque disponível.
+            ⚠️ Alguns itens excedem o estoque disponível.
         </div>
 
         <button id="finalizar-compra" disabled style="opacity: 0.5; cursor: not-allowed; width: 100%;">Finalizar Compra</button>
@@ -91,7 +95,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.adicionarAoCarrinho = async function (produtoId) {
+  const auth = getAuth();
+  const db = getDB();
   const user = auth.currentUser;
+
   if (!user) {
     alert("Você precisa estar logado para adicionar itens ao carrinho!");
     window.location.href = "login.html";
@@ -115,7 +122,7 @@ window.adicionarAoCarrinho = async function (produtoId) {
     }
   } catch (e) { console.error(e); }
 
-  alert("Produto adicionado ao carrinho!");
+  alert("✅ Produto adicionado ao carrinho!");
 
   try {
     const userRef = db.collection("users").doc(user.uid);
@@ -141,6 +148,8 @@ window.adicionarAoCarrinho = async function (produtoId) {
 };
 
 window.aumentarQuantidade = async function (produtoId) {
+  const auth = getAuth();
+  const db = getDB();
   const user = auth.currentUser;
   if (!user) return;
 
@@ -157,6 +166,8 @@ window.aumentarQuantidade = async function (produtoId) {
 };
 
 window.diminuirQuantidade = async function (produtoId) {
+  const auth = getAuth();
+  const db = getDB();
   const user = auth.currentUser;
   if (!user) return;
 
@@ -176,6 +187,8 @@ window.diminuirQuantidade = async function (produtoId) {
 };
 
 window.removerDoCarrinho = async function (produtoId) {
+  const auth = getAuth();
+  const db = getDB();
   const user = auth.currentUser;
   if (!user) return;
 
@@ -188,34 +201,36 @@ window.removerDoCarrinho = async function (produtoId) {
   carregarCarrinho();
 };
 
-function atualizarEstadoBotaoFinalizar(ativo, temErroEstoque) {
+function toggleBotaoFinalizar(ativo, temErroEstoque) {
     const btn = document.getElementById("finalizar-compra");
     const errorMsg = document.getElementById("cart-error-msg");
     
-    if (!btn || !errorMsg) return;
-
-    if (ativo && !temErroEstoque) {
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
-        btn.style.backgroundColor = "#ff6600";
-        errorMsg.style.display = "none";
-    } else {
-        btn.disabled = true;
-        btn.style.opacity = "0.5";
-        btn.style.cursor = "not-allowed";
-        btn.style.backgroundColor = "#ccc";
-        
-        if (temErroEstoque) {
-            errorMsg.style.display = "block";
-            errorMsg.innerText = "Quantidade maior que o estoque. Ajuste para comprar.";
+    if (btn) {
+        if (ativo && !temErroEstoque) {
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            btn.style.cursor = "pointer";
+            btn.style.backgroundColor = "#ff6600";
+            if(errorMsg) errorMsg.style.display = "none";
         } else {
-            errorMsg.style.display = "none";
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            btn.style.cursor = "not-allowed";
+            btn.style.backgroundColor = "#ccc";
+            
+            if (temErroEstoque && errorMsg) {
+                errorMsg.style.display = "block";
+                errorMsg.innerText = "⚠️ Quantidade maior que o estoque. Ajuste para comprar.";
+            } else if (errorMsg) {
+                errorMsg.style.display = "none";
+            }
         }
     }
 }
 
 async function carregarCarrinho() {
+  const auth = getAuth();
+  const db = getDB();
   const user = auth.currentUser;
   const cartContent = document.querySelector(".cart-content");
   const totalEl = document.getElementById("cart-total");
@@ -228,7 +243,7 @@ async function carregarCarrinho() {
   if (!user) {
     cartContent.innerHTML = "<p class='cart-aviso'>Faça login para ver seu carrinho.</p>";
     if (totalEl) totalEl.textContent = "R$ 0,00";
-    atualizarEstadoBotaoFinalizar(false, false);
+    toggleBotaoFinalizar(false, false);
     return;
   }
 
@@ -239,7 +254,7 @@ async function carregarCarrinho() {
     if (cart.length === 0) {
       cartContent.innerHTML = "<p class='cart-aviso'>Seu carrinho está vazio...</p>";
       if (totalEl) totalEl.textContent = "R$ 0,00";
-      atualizarEstadoBotaoFinalizar(false, false);
+      toggleBotaoFinalizar(false, false);
       return;
     }
 
@@ -285,7 +300,7 @@ async function carregarCarrinho() {
 
     cartContent.innerHTML = html;
     
-    atualizarEstadoBotaoFinalizar(true, temErroEstoque);
+    toggleBotaoFinalizar(true, temErroEstoque);
 
     if (totalEl)
       totalEl.textContent = total.toLocaleString("pt-BR", {
@@ -295,6 +310,6 @@ async function carregarCarrinho() {
   } catch (err) {
     console.error("Erro ao carregar carrinho:", err);
     cartContent.innerHTML = "<p>Erro ao carregar carrinho.</p>";
-    atualizarEstadoBotaoFinalizar(false, false);
+    toggleBotaoFinalizar(false, false);
   }
 }

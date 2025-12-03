@@ -34,7 +34,6 @@ let currentEditingId = null;
 function showDashboard() {
     viewDashboard.style.display = 'block';
     viewProducts.style.display = 'none';
-    
     if(linkDashboard) linkDashboard.classList.add('active');
     if(linkProducts) linkProducts.classList.remove('active');
 }
@@ -42,7 +41,6 @@ function showDashboard() {
 function showProducts() {
     viewDashboard.style.display = 'none';
     viewProducts.style.display = 'block';
-    
     if(linkDashboard) linkDashboard.classList.remove('active');
     if(linkProducts) linkProducts.classList.add('active');
 }
@@ -94,10 +92,42 @@ if (adminLogoutBtn) {
 productForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
+    let nome = document.getElementById('product-name').value.trim();
+    let preco = parseFloat(document.getElementById('product-price').value);
+    let estoque = parseInt(document.getElementById('product-stock').value);
+
+    const regexNome = /^[a-zA-Z0-9À-ÿ\s\-\.]+$/;
+    if (!regexNome.test(nome)) {
+        alert("Erro: O nome contém caracteres inválidos.");
+        return;
+    }
+    if (nome.length < 3 || nome.length > 60) {
+        alert("Erro: O nome deve ter entre 3 e 60 caracteres.");
+        return;
+    }
+
+    if (isNaN(preco) || preco <= 0) {
+        alert("Erro: O preço deve ser maior que R$ 0,00.");
+        return;
+    }
+    if (preco > 99999) {
+        alert("Erro: Preço excede o limite permitido.");
+        return;
+    }
+
+    if (isNaN(estoque) || estoque <= 0) {
+        alert("Erro: O estoque inicial deve ser maior que zero (mínimo 1).");
+        return;
+    }
+    if (estoque > 9999) {
+        alert("Erro: Estoque excede o limite permitido.");
+        return;
+    }
+
     const productData = {
-        name: document.getElementById('product-name').value,
-        price: parseFloat(document.getElementById('product-price').value),
-        stock: parseInt(document.getElementById('product-stock').value),
+        name: nome,
+        price: preco,
+        stock: estoque,
         category: document.getElementById('product-category').value,
         imageUrl1: document.getElementById('product-image').value, 
         isOnOffer: document.getElementById('product-offer').checked
@@ -108,8 +138,8 @@ productForm.addEventListener('submit', (e) => {
             alert("Produto atualizado com sucesso!");
             resetForm();
         }).catch(error => {
-            console.error("Erro ao atualizar:", error);
-            alert("Erro ao atualizar.");
+            console.error("Erro:", error);
+            alert("Erro ao atualizar: " + error.message);
         });
     } else {
         productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
@@ -117,8 +147,8 @@ productForm.addEventListener('submit', (e) => {
             alert("Produto salvo com sucesso!");
             resetForm();
         }).catch(error => {
-            console.error("Erro ao salvar:", error);
-            alert("Erro ao salvar.");
+            console.error("Erro:", error);
+            alert("Erro ao salvar: " + error.message);
         });
     }
 });
@@ -184,7 +214,7 @@ window.deletarProduto = function(id) {
     if (confirm("Tem certeza que deseja deletar este produto?")) {
         db.collection('products').doc(id).delete()
           .then(() => alert("Produto deletado!"))
-          .catch(error => console.error("Erro ao deletar:", error));
+          .catch(error => console.error("Erro:", error));
     }
 };
 

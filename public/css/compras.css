@@ -259,6 +259,36 @@ header {
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
 
+.btn-cancelar {
+    background-color: white;
+    border: 2px solid #ccc;
+    color: #555;
+    padding: 15px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    flex: 1; 
+}
+
+.btn-cancelar:hover {
+    border-color: #d93025; 
+    color: #d93025;
+    background-color: #fff5f5;
+}
+
+.botoes-compra {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+#finalizarCompra, #finalizarCarrinho {
+    flex: 2; 
+}
+
 .product-card img {
     max-width: 90%;
     height: auto;
@@ -687,3 +717,4 @@ body.page-comprar #finalizarCompra:hover {
   box-shadow: 0 3px 6px rgba(0,0,0,0.1);
   text-align: center;
 }
+
