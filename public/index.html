@@ -136,11 +136,11 @@
         <span>Total:</span>
         <span id="cart-total-value">R$ 0,00</span>
       </div>
-      <a href="carrinhocompra.html" class="btn-checkout">Finalizar Compra</a>
+      <a href="carrinhocomprar.html" class="btn-checkout">Finalizar Compra</a>
     </div>
   </div>
 
-  <script>
+<script>
     const slides = document.querySelector('.carousel-slides');
     const images = document.querySelectorAll('.carousel-slides img');
     const prevBtn = document.querySelector('.carousel-btn.prev');
@@ -149,7 +149,9 @@
 
     let index = 1;
     let isTransitioning = false;
+    let slideInterval; // Variável para controlar o tempo
 
+    // Clones para efeito infinito
     const firstClone = images[0].cloneNode(true);
     const lastClone = images[totalSlides - 1].cloneNode(true);
     slides.appendChild(firstClone);
@@ -157,18 +159,24 @@
 
     const allSlides = document.querySelectorAll('.carousel-slides img');
     slides.style.transform = `translateX(-${index * 100}%)`;
-    document.body.style.background = images[index - 1].dataset.bg;
+    
+    // Define cor inicial
+    if(images[index - 1]) {
+        document.body.style.background = images[index - 1].dataset.bg;
+    }
 
     function changeBackground(i) {
       const realIndex = (i - 1 + totalSlides) % totalSlides;
-      document.body.style.background = images[realIndex].dataset.bg;
+      if (images[realIndex]) {
+        document.body.style.background = images[realIndex].dataset.bg;
+      }
     }
 
     function moveToSlide(i) {
       if (isTransitioning) return;
       isTransitioning = true;
       index = i;
-      slides.style.transition = "transform 0.5s ease-in-out";
+      slides.style.transition = "transform 0.6s ease-in-out"; 
       slides.style.transform = `translateX(-${index * 100}%)`;
       changeBackground(index);
     }
@@ -186,9 +194,22 @@
       isTransitioning = false;
     });
 
-    prevBtn.addEventListener('click', () => moveToSlide(index - 1));
-    nextBtn.addEventListener('click', () => moveToSlide(index + 1));
-    setInterval(() => moveToSlide(index + 1), 5000);
+    function resetInterval() {
+        clearInterval(slideInterval);
+        slideInterval = setInterval(() => moveToSlide(index + 1), 7000); 
+    }
+
+    prevBtn.addEventListener('click', () => {
+        moveToSlide(index - 1);
+        resetInterval(); 
+    });
+
+    nextBtn.addEventListener('click', () => {
+        moveToSlide(index + 1);
+        resetInterval(); 
+    });
+
+    resetInterval();
 
     const header = document.getElementById("mainHeader");
     function checkScroll() {
@@ -208,11 +229,6 @@
   <script src="./script/produtos.js"></script>
   <script src="./script/index.js"></script>
   <script src="./script/pesquisa.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      inicializarPaginaDeProdutos();
-    });
-  </script>
 </body>
 
 

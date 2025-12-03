@@ -75,17 +75,28 @@ function addButtonEvents() {
   document.querySelectorAll('.btn-buy').forEach(btn => {
     btn.addEventListener('click', e => {
       const id = e.target.dataset.id;
+      
+      const user = firebase.auth().currentUser;
+      
+      if (!user) {
+        alert("Faça login para continuar a compra!");
+        localStorage.setItem('redirectAfterLogin', 'comprar.html'); 
+        localStorage.setItem('produtoSelecionado', id);
+        window.location.href = 'login.html';
+        return;
+      }
+      
       localStorage.setItem('produtoSelecionado', id);
       window.location.href = 'comprar.html';
     });
   });
+
   document.querySelectorAll('.btn-add-cart').forEach(btn => btn.addEventListener('click', e => e.stopPropagation()));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     if (!pageIdentifier) {
-      console.error("data-category não encontrado no body.");
-      return;
+      return; 
     }
 
     if (pageIdentifier === 'search') {

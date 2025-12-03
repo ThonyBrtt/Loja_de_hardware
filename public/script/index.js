@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (typeof firebase === "undefined" || !firebase.apps.length) {
-    console.error("⚠️ Erro: Scripts do Firebase não carregados no HTML.");
+    console.error("Erro: Scripts do Firebase não carregados no HTML.");
     return;
   }
 
@@ -46,9 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
     db.collection('products')
       .orderBy('createdAt', 'desc')
       .limit(10)
-      .get()
-      .then(snapshot => renderProducts(snapshot.docs))
-      .catch(error => {
+      .onSnapshot(snapshot => {
+          renderProducts(snapshot.docs);
+      }, error => {
         console.error("Erro ao buscar destaques:", error);
         if (productGrid) {
           productGrid.innerHTML = `<p style="color:red; text-align:center;">Erro ao carregar ofertas.</p>`;
@@ -71,9 +71,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const productId = doc.id;
 
       const imgUrl = product.imageUrl1 || product.imageUrl || "https://via.placeholder.com/300x300.png?text=Sem+Imagem";
-
       const formattedPrice = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       const installmentPrice = (product.price / 12).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      
+      const estoque = product.stock || 0;
+      let botoesHTML = '';
+
+      if (estoque > 0) {
+          botoesHTML = `
+            <button class="btn btn-add-cart" onclick="window.tentarAdicionarAoCarrinho('${productId}')">ADICIONAR AO CARRINHO</button>
+            <button class="btn btn-buy" onclick="window.comprarProduto('${productId}')">COMPRAR</button>
+          `;
+      } else {
+          botoesHTML = `
+            <button class="btn" disabled style="background-color: #ccc; color: #555; cursor: not-allowed; width: 100%; border: 1px solid #999;">PRODUTO ESGOTADO</button>
+          `;
+      }
 
       cardsHTML += `
       <div class="product-card">
@@ -81,10 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <h3 class="product-name">${product.name}</h3>
           <p class="product-price-new">${formattedPrice}</p>
           <p class="product-installments">12x de ${installmentPrice} sem juros</p>
-        <div class="product-buttons">
-          <button class="btn btn-add-cart" onclick="alert('Produto adicionado com sucesso!'); window.adicionarAoCarrinho('${productId}')">ADICIONAR AO CARRINHO</button>
-          <button class="btn btn-buy" onclick="window.comprarProduto('${productId}')">COMPRAR</button>
-        </div>
+          <div class="product-buttons">
+             ${botoesHTML}
+          </div>
       </div>
       `;
     });
@@ -92,7 +104,30 @@ document.addEventListener('DOMContentLoaded', () => {
     productGrid.innerHTML = cardsHTML;
   }
 
+  window.tentarAdicionarAoCarrinho = function(productId) {
+    const user = firebase.auth().currentUser;
+
+    if (!user) {
+        alert("Você precisa fazer login para adicionar itens ao carrinho!");
+        window.location.href = "login.html";
+        return;
+    }
+
+    if (typeof window.adicionarAoCarrinho === 'function') {
+        window.adicionarAoCarrinho(productId);
+    }
+  }
+
   window.comprarProduto = function (produtoId) {
+    const user = firebase.auth().currentUser;
+
+    if (!user) {
+        alert("Faça login para continuar a compra!");
+        localStorage.setItem('produtoSelecionado', produtoId);
+        window.location.href = 'login.html';
+        return;
+    }
+
     localStorage.setItem('produtoSelecionado', produtoId);
     window.location.href = 'comprar.html';
   }
