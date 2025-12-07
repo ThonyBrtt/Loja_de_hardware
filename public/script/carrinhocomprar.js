@@ -181,20 +181,37 @@ async function carregarProdutoUnico(produtoId, user) {
     const qnt = parseInt(quantidadeInput.value);
 
     btn.disabled = true;
-    btn.textContent = "Salvando...";
+    btn.textContent = "Processando no Servidor...";
 
     try {
-      await db.collection('users').doc(user.uid).update({
-        cart: [{ produtoId: produtoId, quantidade: qnt }]
-      });
-      window.location.href = 'enderecocomprar.html';
+        const resposta = await fetch('/api/finalizar-compra', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId: user.uid,
+                userEmail: user.email,
+                addressId: "endereco_padrao_teste", 
+                items: [{ produtoId: produtoId, quantidade: qnt }]
+            })
+        });
+
+        const resultado = await resposta.json();
+
+        if (resultado.sucesso) {
+            alert("✅ " + resultado.mensagem);
+            localStorage.removeItem('produtoSelecionado');
+            window.location.href = 'index.html';
+        } else {
+            throw new Error(resultado.erro);
+        }
+
     } catch (e) {
-      console.error(e);
-      alert("Erro ao processar. Tente novamente.");
-      btn.disabled = false;
-      btn.textContent = "Continuar para Endereço ➝";
+        console.error(e);
+        alert("Erro do Servidor: " + e.message);
+        btn.disabled = false;
+        btn.textContent = "Tentar Novamente";
     }
-  });
+});
 }
 
 async function carregarCarrinhoCompleto(user) {
@@ -259,9 +276,48 @@ async function carregarCarrinhoCompleto(user) {
     window.location.href = 'index.html';
   });
 
-  document.getElementById('finalizarCarrinho').addEventListener('click', () => {
-    window.location.href = 'enderecocomprar.html';
-  });
+  document.getElementById('finalizarCarrinho').addEventListener('click', async () => {
+    const btn = document.getElementById('finalizarCarrinho');
+    
+    // Pega o carrinho atual do banco para garantir
+    const userDoc = await db.collection('users').doc(user.uid).get();
+    const itemsCarrinho = userDoc.data()?.cart || [];
+
+    if (itemsCarrinho.length === 0) return alert("Carrinho vazio!");
+
+    btn.disabled = true;
+    btn.textContent = "Processando no Servidor...";
+
+    try {
+        // MANDA PARA O SEU SERVIDOR NODE.JS
+        const resposta = await fetch('/api/finalizar-compra', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId: user.uid,
+                userEmail: user.email,
+                addressId: "endereco_padrao_teste",
+                items: itemsCarrinho
+            })
+        });
+
+        const resultado = await resposta.json();
+
+        if (resultado.sucesso) {
+            alert("✅ " + resultado.mensagem);
+            localStorage.removeItem('carrinho');
+            window.location.href = 'index.html';
+        } else {
+            throw new Error(resultado.erro);
+        }
+
+    } catch (e) {
+        console.error(e);
+        alert("Erro do Servidor: " + e.message);
+        btn.disabled = false;
+        btn.textContent = "Tentar Novamente";
+    }
+});
 }
 
 function configurarCarrossel(container) {
