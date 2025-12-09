@@ -37,7 +37,13 @@ document.addEventListener("DOMContentLoaded", function () {
         const password = document.getElementById("password").value;
         const confirmPassword = document.getElementById("confirm-password").value;
         const acceptTerms = form.querySelector('input[type="checkbox"][required]');
-        
+
+        const recaptchaResponse = grecaptcha.getResponse();
+        if (recaptchaResponse.length === 0) {
+            showMessage("Por favor, confirme que você não é um robô!", "error");
+            return;
+        }
+
         if (!fullName || !email || !password || !confirmPassword) {
             showMessage("Preencha todos os campos obrigatórios!", "error");
             return;
@@ -88,6 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     errorMessage += error.message;
             }
             showMessage(errorMessage, "error");
+            grecaptcha.reset();
         } finally {
             loading.style.display = "none";
         }

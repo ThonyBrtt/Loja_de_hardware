@@ -1,6 +1,5 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -17,36 +16,50 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-
 const loginForm = document.getElementById("login-form");
 const emailInput = document.getElementById("login-email");
 const passwordInput = document.getElementById("login-password");
 const messageBox = document.getElementById("message");
 const loading = document.getElementById("loading");
 
-
 function showMessage(text, type = "error") {
+    if (!messageBox) return;
     messageBox.style.display = "block";
     messageBox.className = "message " + type;
     messageBox.innerText = text;
     setTimeout(() => {
         messageBox.style.display = "none";
-    }, 5000);
+    }, 6000);
 }
 
 function simpleErrorMessage(error) {
+    console.error("Erro Firebase Detalhado:", error.code, error.message);
+
     if (error && error.code) {
-        if (error.code === "auth/wrong-password" || error.code === "auth/user-not-found" || error.code === "auth/invalid-credential") {
-            return "E-mail ou senha incorretos.";
-        }
-        if (error.code === "auth/invalid-email") {
-            return "E-mail inválido.";
-        }
-        if (error.code === "auth/too-many-requests") {
-            return "Muitas tentativas. Tente novamente mais tarde.";
+        switch (error.code) {
+            case "auth/invalid-credential":
+            case "auth/invalid-login-credentials": 
+            case "auth/wrong-password":
+            case "auth/user-not-found":
+                return "E-mail ou senha incorretos. (Se criou com Google, use o botão Google)";
+            
+            case "auth/invalid-email":
+                return "O formato do e-mail é inválido.";
+            
+            case "auth/user-disabled":
+                return "Esta conta foi desativada pelo administrador.";
+            
+            case "auth/too-many-requests":
+                return "Muitas tentativas falhas. Aguarde alguns minutos ou redefina sua senha.";
+                
+            case "auth/network-request-failed":
+                return "Erro de conexão. Verifique sua internet.";
+                
+            default:
+                return "Erro ao entrar (" + error.code + "). Tente novamente.";
         }
     }
-    return "Ocorreu um erro. Tente novamente.";
+    return "Ocorreu um erro inesperado. Tente novamente.";
 }
 
 function validateInputs(email, password) {
@@ -54,7 +67,6 @@ function validateInputs(email, password) {
     if (!password) return "Informe a senha.";
     return null;
 }
-
 
 async function checkAdminRoleAndRedirect(user) {
     try {
@@ -77,19 +89,25 @@ async function checkAdminRoleAndRedirect(user) {
     }
 }
 
-
 if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        loading.style.display = "block";
 
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
+        const recaptchaResponse = grecaptcha.getResponse();
+        if (recaptchaResponse.length === 0) {
+            showMessage("Por favor, marque a caixa 'Não sou um robô'.");
+            return;
+        }
+
+        if (loading) loading.style.display = "block";
+
+        const email = emailInput.value.trim(); 
+        const password = passwordInput.value.trim();
 
         const invalid = validateInputs(email, password);
         if (invalid) {
             showMessage(invalid);
-            loading.style.display = "none";
+            if (loading) loading.style.display = "none";
             return;
         }
 
@@ -100,14 +118,15 @@ if (loginForm) {
             if (!user.emailVerified) {
                 showMessage("Por favor, verifique seu e-mail antes de entrar.");
                 await signOut(auth);
-                loading.style.display = "none";
+                if (loading) loading.style.display = "none";
                 return;
             }
 
             await checkAdminRoleAndRedirect(user);
         } catch (error) {
             showMessage(simpleErrorMessage(error));
-            loading.style.display = "none";
+            if (loading) loading.style.display = "none";
+            grecaptcha.reset(); 
         }
     });
 }
@@ -115,22 +134,24 @@ if (loginForm) {
 const googleLoginButton = document.getElementById("google-login");
 if (googleLoginButton) {
     googleLoginButton.addEventListener("click", async () => {
-        loading.style.display = "block";
+        
+        const recaptchaResponse = grecaptcha.getResponse();
+        if (recaptchaResponse.length === 0) {
+            showMessage("Por favor, marque a caixa 'Não sou um robô' antes de conectar com o Google.");
+            return; 
+        }
+
+        if (loading) loading.style.display = "block";
         const provider = new GoogleAuthProvider();
 
         try {
             const result = await signInWithPopup(auth, provider);
             await checkAdminRoleAndRedirect(result.user);
         } catch (error) {
+            console.error("Erro Google:", error);
             showMessage(simpleErrorMessage(error));
-            loading.style.display = "none";
+            if (loading) loading.style.display = "none";
+            grecaptcha.reset();
         }
     });
 }
-
-module.exports = {
-  validateInputs,
-  simpleErrorMessage,
-  showMessage,
-  checkAdminRoleAndRedirect
-};

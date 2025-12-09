@@ -1,4 +1,3 @@
-
 const firebaseConfig = {
     apiKey: "AIzaSyB_Pd9n5VzXloRQvqusZUIhwZVmJvnKfQc",
     authDomain: "boombum-eaf32.firebaseapp.com",
@@ -9,10 +8,10 @@ const firebaseConfig = {
     measurementId: "G-D7CBRK53E0"
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const auth = firebase.auth();
-
-
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -51,6 +50,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const email = emailInput.value.trim();
 
+        const recaptchaResponse = grecaptcha.getResponse();
+        if (recaptchaResponse.length === 0) {
+            showMessage("Marque o captcha antes de pedir a nova senha.", "error");
+            return;
+        }
+
         if (!email) {
             showMessage('Por favor, digite seu email.', 'error');
             return;
@@ -73,7 +78,6 @@ document.addEventListener('DOMContentLoaded', function() {
             loading.style.display = 'none';
             console.error('Erro ao enviar email de recuperação:', error);
             
-
             let errorMessage = 'Erro ao enviar email: ';
             switch (error.code) {
                 case 'auth/user-not-found':
@@ -89,6 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     errorMessage += 'Ocorreu um erro inesperado.';
             }
             showMessage(errorMessage, 'error');
+            grecaptcha.reset(); 
         }
     });
 
