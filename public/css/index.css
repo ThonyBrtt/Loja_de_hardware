@@ -33,7 +33,7 @@ body {
     }
 
     .search-bar {
-      flex: 0 0 800px;
+      flex: 0 0 600px;
       position: relative;
       margin-right: 25px;
       margin-top: 5px;
