@@ -1,10 +1,12 @@
 const productGrid = document.getElementById('product-grid');
 const pageIdentifier = document.body.dataset.category; 
+const filterSelect = document.getElementById('filterSelect'); 
 let currentQuery = null;
+let todosProdutos = []; 
 
 function renderProducts(docs) {
-  if (!docs.length) {
-    productGrid.innerHTML = '<p class="empty-category-message" style="text-align:center; padding:50px;">Nenhum produto encontrado com esse termo.</p>';
+  if (!docs || !docs.length) {
+    productGrid.innerHTML = '<p class="empty-category-message" style="text-align:center; padding:50px;">Nenhum produto encontrado.</p>';
     return;
   }
 
@@ -55,6 +57,38 @@ function renderProducts(docs) {
   addButtonEvents();
 }
 
+function aplicarFiltros() {
+    if (!todosProdutos.length) return;
+
+    const filtro = filterSelect ? filterSelect.value : 'recentes';
+    let produtosOrdenados = [...todosProdutos]; 
+
+    produtosOrdenados.sort((a, b) => {
+        const dataA = typeof a.data === 'function' ? a.data() : a;
+        const dataB = typeof b.data === 'function' ? b.data() : b;
+
+        switch (filtro) {
+            case 'precoMenor':
+                return dataA.price - dataB.price;
+            case 'precoMaior':
+                return dataB.price - dataA.price;
+            case 'alfabetico':
+                return dataA.name.localeCompare(dataB.name);
+            case 'recentes':
+            default:
+                const timeA = dataA.createdAt ? (dataA.createdAt.seconds || 0) : 0;
+                const timeB = dataB.createdAt ? (dataB.createdAt.seconds || 0) : 0;
+                return timeB - timeA;
+        }
+    });
+
+    renderProducts(produtosOrdenados);
+}
+
+if (filterSelect) {
+    filterSelect.addEventListener('change', aplicarFiltros);
+}
+
 function initCarousels() {
   document.querySelectorAll('.carousel-container').forEach(container => {
     const imgs = container.querySelectorAll('.carousel-img');
@@ -75,7 +109,6 @@ function addButtonEvents() {
   document.querySelectorAll('.btn-buy').forEach(btn => {
     btn.addEventListener('click', e => {
       const id = e.target.dataset.id;
-      
       const user = firebase.auth().currentUser;
       
       if (!user) {
@@ -107,14 +140,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if(titulo) titulo.innerText = searchTerm ? `Resultados para: "${searchTerm}"` : "Todos os Produtos";
 
         db.collection('products').get().then(snapshot => {
-            const todosProdutos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const rawDocs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-            const filtrados = todosProdutos.filter(p => 
+            const filtrados = rawDocs.filter(p => 
                 p.name.toLowerCase().includes(searchTerm)
             );
 
-            const docsAdaptados = filtrados.map(p => ({ id: p.id, data: () => p }));
-            renderProducts(docsAdaptados);
+            todosProdutos = filtrados;
+            
+            aplicarFiltros(); 
+
         }).catch(err => console.error("Erro busca:", err));
 
         return; 
@@ -129,11 +164,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     query.onSnapshot(snapshot => {
-        renderProducts(snapshot.docs);
+        todosProdutos = snapshot.docs;
+        
+        aplicarFiltros();
     }, error => {
         console.error("Erro ao buscar produtos:", error);
         productGrid.innerHTML = `<p class="error-message">Erro ao carregar produtos.</p>`;
     });
 });
-
-const filterSelect = document.getElementById('filterSelect');
